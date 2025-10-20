@@ -1,0 +1,57 @@
+using TMPro;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class GameManager : MonoBehaviour{
+
+    [SerializeField] GameObject startMenu;
+    [SerializeField] public GameObject endMenu;
+
+    public bool endGame;
+
+    public static GameManager instance;
+
+    private void Awake(){
+
+        if (instance == null){
+
+            DontDestroyOnLoad(gameObject);
+            instance = this;
+
+        }
+        else if (instance != this) { 
+            
+            Destroy(gameObject);
+        
+        }
+    }
+    public void Start() {
+
+        DontDestroyOnLoad (gameObject); 
+        startMenu.SetActive(true);
+        endMenu.SetActive(false);
+
+      /*Generator.gen.setWidth(8);
+        Generator.gen.setHeight(8);
+        Generator.gen.setBombs(10);
+        Generator.gen.Generate();*/
+
+    }
+    public void GameStart() {
+
+        Generator.gen.setWidth(int.Parse(StartMenu.instance.width.GetComponentInChildren<TMP_InputField>().text.ToString()));
+        Generator.gen.setHeight(int.Parse(StartMenu.instance.height.GetComponentInChildren<TMP_InputField>().text.ToString()));
+        Generator.gen.setBombs(int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
+
+        if (Generator.gen.Validate() == 0)
+        {
+
+            Generator.gen.Generate();
+            startMenu.SetActive(false);
+        }
+        else { 
+            //creamos un canvas con el mensaje de error
+        
+        }
+    }
+}
