@@ -52,4 +52,13 @@ public class GameManager : MonoBehaviour{
 
         }
     }
+    public void flagsMinus() {
+        flagsRemaining--;
+    }
+    public void flagsPlus(){
+        flagsRemaining++;
+    }
+    public int flags() {
+        return flagsRemaining;
+    }
 }

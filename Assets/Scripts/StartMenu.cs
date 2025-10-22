@@ -10,7 +10,7 @@ public class StartMenu : MonoBehaviour{
     [SerializeField] public TMP_InputField height;
     [SerializeField] public TMP_InputField bombs;
 
-    public int flags;
+    private int flags;
 
     public static StartMenu instance;
 
@@ -28,7 +28,27 @@ public class StartMenu : MonoBehaviour{
         }
         else{
             Debug.LogWarning("No se pudo convertir el valor de 'bombs' a entero.");
-            flags = 5; // Valor por defecto si la conversión falla
+            flags = 10; // Valor por defecto si la conversión falla
         }
     }
 }
+
+/* 
+ 
+Falta por hacer: 
+
+1.- Mostar el mensaje de victoria una vez detectadas y flageadas todas las bombas
+
+2.- Mostrar el boton de Empezar de nuevo para cargar la interfaz principal y volver a poder jugar
+
+3.- Que no escriba banderas en casillas abiertas o con numeros
+4.- Que no escriba banderas una vez has perdido la partida
+
+5.- Control de errores: 
+
+a) poner mas bombas que casillas
+b) hacer un panel mas grande que la pantalla
+c) 
+ 
+ 
+ */

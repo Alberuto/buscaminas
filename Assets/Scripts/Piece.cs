@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
+//Script de la pieza, 
 public class Piece : MonoBehaviour {
 
     [SerializeField] private int x, y, bombsDetected=0;
@@ -52,6 +53,10 @@ public class Piece : MonoBehaviour {
                 GameManager.instance.endGame = true;
                 //muestra el mensaje de derrota
                 GameManager.instance.endMenu.SetActive(true);
+
+                Transform derrota = GameManager.instance.endMenu.transform.Find("Derrota");
+
+                derrota.gameObject.SetActive(true);
             }
             else {
 
@@ -105,7 +110,7 @@ public class Piece : MonoBehaviour {
             if (!flaged && GameManager.instance.flagsRemaining > 0)
             {
                 DrawFlag();
-                GameManager.instance.flagsRemaining--;
+                GameManager.instance.flagsMinus();
 
                 if (isBomb())
                     bombsDetected++;
@@ -113,17 +118,25 @@ public class Piece : MonoBehaviour {
             else if (flaged){
 
                 EraseFlag();
-                GameManager.instance.flagsRemaining++;
+                GameManager.instance.flagsPlus();
+
+
 
                 if (isBomb())
                     bombsDetected--;
             }
         }
-        if (bombsDetected == Generator.gen.bombsNumber && GameManager.instance.flagsRemaining == 0){
+        if (bombsDetected == Generator.gen.bombsNumber && GameManager.instance.flags() == 0){
 
             Debug.Log("¡Has ganado!");
             GameManager.instance.endGame = true;
             GameManager.instance.endMenu.SetActive(true);
+
+            Transform victoria = GameManager.instance.endMenu.transform.Find("Victoria");
+
+            victoria.gameObject.SetActive(true);
+
+
         }
 
         Debug.Log("Banderas restantes: " + GameManager.instance.flagsRemaining);
