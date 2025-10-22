@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 
 public class Piece : MonoBehaviour {
 
-    [SerializeField] private int x, y;
+    [SerializeField] private int x, y, bombsDetected=0;
     [SerializeField] private bool bomb, check, flaged;
 
     public void setX(int x) { 
@@ -44,17 +44,14 @@ public class Piece : MonoBehaviour {
 
             setCheck(true);
 
-            Debug.Log("Click detectado");
-
             if (isBomb()) {
 
                 GetComponent<SpriteRenderer>().material.color = Color.red;
                 transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
-
+                //impide que sigas jugando
                 GameManager.instance.endGame = true;
-
-                GameManager.instance.endMenu.SetActive(true);//por aqui me quedé
-
+                //muestra el mensaje de derrota
+                GameManager.instance.endMenu.SetActive(true);
             }
             else {
 
@@ -75,6 +72,7 @@ public class Piece : MonoBehaviour {
                         textComponent.color = Color.red;
                  }
                 else { 
+
                     GetComponent<Renderer>().material.color = Color.gray5;
                     Generator.gen.CheckPieceAround(x, y);
 
@@ -104,11 +102,31 @@ public class Piece : MonoBehaviour {
 
         if (hit.collider != null && hit.collider.gameObject == this.gameObject) {
 
-            if (!flaged)
+            if (!flaged && GameManager.instance.flagsRemaining > 0)
+            {
                 DrawFlag();
-            else
+                GameManager.instance.flagsRemaining--;
+
+                if (isBomb())
+                    bombsDetected++;
+            }
+            else if (flaged){
+
                 EraseFlag();
-        }      
+                GameManager.instance.flagsRemaining++;
+
+                if (isBomb())
+                    bombsDetected--;
+            }
+        }
+        if (bombsDetected == Generator.gen.bombsNumber && GameManager.instance.flagsRemaining == 0){
+
+            Debug.Log("¡Has ganado!");
+            GameManager.instance.endGame = true;
+            GameManager.instance.endMenu.SetActive(true);
+        }
+
+        Debug.Log("Banderas restantes: " + GameManager.instance.flagsRemaining);
     }
     public void DrawFlag() {
 

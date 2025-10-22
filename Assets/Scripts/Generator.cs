@@ -4,7 +4,7 @@ public class Generator : MonoBehaviour{
 
     //declarar variables public <tipo> <nombre>
     [SerializeField] private GameObject Piece;
-    [SerializeField] private int width, height, bombsNumber;
+    [SerializeField] public int width, height, bombsNumber;
     [SerializeField] private GameObject [][] map;
 
     public static Generator gen;
@@ -76,8 +76,6 @@ public class Generator : MonoBehaviour{
             else {
                 i--;
             }
-            //test color asign
-            //map[Random.Range(0, width)][Random.Range(0,height)].GetComponent<SpriteRenderer>().material.color = Color.red;
         }
     }
 

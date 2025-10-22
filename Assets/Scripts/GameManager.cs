@@ -8,8 +8,8 @@ public class GameManager : MonoBehaviour{
     [SerializeField] public GameObject endMenu;
 
     public bool endGame;
-
     public static GameManager instance;
+    public int flagsRemaining;
 
     private void Awake(){
 
@@ -31,11 +31,6 @@ public class GameManager : MonoBehaviour{
         startMenu.SetActive(true);
         endMenu.SetActive(false);
 
-      /*Generator.gen.setWidth(8);
-        Generator.gen.setHeight(8);
-        Generator.gen.setBombs(10);
-        Generator.gen.Generate();*/
-
     }
     public void GameStart() {
 
@@ -43,15 +38,18 @@ public class GameManager : MonoBehaviour{
         Generator.gen.setHeight(int.Parse(StartMenu.instance.height.GetComponentInChildren<TMP_InputField>().text.ToString()));
         Generator.gen.setBombs(int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
 
-        if (Generator.gen.Validate() == 0)
-        {
+        flagsRemaining = (int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
+
+        if (Generator.gen.Validate() == 0){
 
             Generator.gen.Generate();
             startMenu.SetActive(false);
         }
-        else { 
+        else {
+
+            Debug.Log("Error en los parámetros del juego.");
             //creamos un canvas con el mensaje de error
-        
+
         }
     }
 }
