@@ -5,7 +5,7 @@ public class Generator : MonoBehaviour{
     //declarar variables public <tipo> <nombre>
     [SerializeField] private GameObject Piece;
     [SerializeField] public int width, height, bombsNumber;
-    [SerializeField] private GameObject [][] map;
+    [SerializeField] public GameObject [][] map;
 
     public static Generator gen;
     private void Awake(){
@@ -129,5 +129,17 @@ public class Generator : MonoBehaviour{
         //Abajo derecha
         if (x < width - 1 && y > 0) 
             map[x + 1][y - 1].GetComponent<Piece>().DrawBomb();
+    }
+
+    public void DestroyMap() {
+
+        if (map != null) {
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) { 
+                    Destroy(map[i][j]);
+                }
+            }
+        
+        }
     }
 }

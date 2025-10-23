@@ -1,6 +1,7 @@
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour{
 
@@ -30,6 +31,7 @@ public class GameManager : MonoBehaviour{
         DontDestroyOnLoad (gameObject); 
         startMenu.SetActive(true);
         endMenu.SetActive(false);
+        endGame = false;
 
     }
     public void GameStart() {
@@ -52,7 +54,7 @@ public class GameManager : MonoBehaviour{
 
         }
     }
-    public void flagsMinus() {
+    public void flagsMinus(){
         flagsRemaining--;
     }
     public void flagsPlus(){
@@ -60,5 +62,16 @@ public class GameManager : MonoBehaviour{
     }
     public int flags() {
         return flagsRemaining;
+    }
+    public void ReiniciarJuego(){
+
+        if (Generator.gen.map != null) {
+
+            Generator.gen.DestroyMap();
+        
+        }
+        // Recarga la escena actual al estado inicial
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Start();
     }
 }

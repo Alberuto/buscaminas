@@ -55,8 +55,10 @@ public class Piece : MonoBehaviour {
                 GameManager.instance.endMenu.SetActive(true);
 
                 Transform derrota = GameManager.instance.endMenu.transform.Find("Derrota");
+                Transform victoria = GameManager.instance.endMenu.transform.Find("Victoria");
 
                 derrota.gameObject.SetActive(true);
+                victoria.gameObject.SetActive(false);
             }
             else {
 
@@ -133,7 +135,9 @@ public class Piece : MonoBehaviour {
             GameManager.instance.endMenu.SetActive(true);
 
             Transform victoria = GameManager.instance.endMenu.transform.Find("Victoria");
+            Transform derrota = GameManager.instance.endMenu.transform.Find("Derrota");
 
+            derrota.gameObject.SetActive(false);
             victoria.gameObject.SetActive(true);
 
 
