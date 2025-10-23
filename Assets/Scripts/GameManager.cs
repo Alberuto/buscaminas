@@ -10,9 +10,7 @@ public class GameManager : MonoBehaviour{
 
     public bool endGame;
     public static GameManager instance;
-    public int flagsRemaining;
-
-    public int bombsFlaggedCorrectly=0;
+    public int flagsRemaining, bombsFlaggedCorrectly=0;
 
     private void Awake(){
 
@@ -20,12 +18,10 @@ public class GameManager : MonoBehaviour{
 
             DontDestroyOnLoad(gameObject);
             instance = this;
-
         }
         else if (instance != this) { 
             
             Destroy(gameObject);
-        
         }
     }
     public void Start() {
@@ -35,7 +31,6 @@ public class GameManager : MonoBehaviour{
         endMenu.SetActive(false);
         endGame = false;
         bombsFlaggedCorrectly = 0;
-
     }
     public void GameStart() {
 
@@ -45,7 +40,7 @@ public class GameManager : MonoBehaviour{
 
         flagsRemaining = (int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
 
-        if (Generator.gen.Validate() == 0){
+        if (Generator.gen.Validate() == 0) {
 
             Generator.gen.Generate();
             startMenu.SetActive(false);
@@ -80,13 +75,8 @@ public class GameManager : MonoBehaviour{
             derrota.gameObject.SetActive(false);
         }
     }
-   /* public void flagsMinus(){
-        flagsRemaining--;
-    }
-    public void flagsPlus(){
-        flagsRemaining++;
-    }*/
     public int flags() {
+
         return flagsRemaining;
     }
     public void ReiniciarJuego(){
@@ -94,10 +84,9 @@ public class GameManager : MonoBehaviour{
         if (Generator.gen.map != null) {
 
             Generator.gen.DestroyMap();
-        
         }
+        Start();
         // Recarga la escena actual al estado inicial
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        Start();
     }
 }

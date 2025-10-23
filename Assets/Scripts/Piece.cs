@@ -37,7 +37,6 @@ public class Piece : MonoBehaviour {
 
         if(!GameManager.instance.endGame && !flaged)
             DrawBomb();
-
     }
     public void DrawBomb() {
 
@@ -51,7 +50,7 @@ public class Piece : MonoBehaviour {
                 transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
                 //impide que sigas jugando
                 GameManager.instance.endGame = true;
-                //muestra el mensaje de derrota
+                //muestra el mensaje de derrota y desactiva el de victoria (si has ganado antes salen sino)
                 GameManager.instance.endMenu.SetActive(true);
 
                 Transform derrota = GameManager.instance.endMenu.transform.Find("Derrota");
@@ -77,7 +76,7 @@ public class Piece : MonoBehaviour {
                         textComponent.color= Color.orange;
                     if (bombsNumer >= 4)
                         textComponent.color = Color.red;
-                 }
+                }
                 else { 
 
                     GetComponent<Renderer>().material.color = Color.gray5;
@@ -98,6 +97,7 @@ public class Piece : MonoBehaviour {
     void Update() {
 
         if (Input.GetMouseButtonDown(1)) {
+
             DetectRightClick();
         }
     }
@@ -107,7 +107,7 @@ public class Piece : MonoBehaviour {
         Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
         RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
 
-        if (hit.collider != null && hit.collider.gameObject == this.gameObject) {
+        if (hit.collider != null && hit.collider.gameObject == this.gameObject &&!GameManager.instance.endGame) {
 
             if (!flaged && GameManager.instance.flagsRemaining > 0 && !isCheck()){
 
@@ -125,12 +125,10 @@ public class Piece : MonoBehaviour {
 
         transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
         flaged = true;
-
     }
     public void EraseFlag() {
 
         transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
         flaged = false;
-
     }
 }

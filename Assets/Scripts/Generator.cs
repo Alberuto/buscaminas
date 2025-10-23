@@ -11,7 +11,6 @@ public class Generator : MonoBehaviour{
     private void Awake(){
 
         gen = this;
-
     }
     public void setWidth(int width) {
         
@@ -31,10 +30,8 @@ public class Generator : MonoBehaviour{
 
         if(width <= 1)
             errorCode += 4;
-        
         if (height <= 1)
             errorCode += 2;
-        
         if (!(bombsNumber >=0 && bombsNumber < (width*height)))
             errorCode += 1;
 
@@ -57,12 +54,10 @@ public class Generator : MonoBehaviour{
                 map[i][j] = Instantiate(Piece, new Vector3(i, j, 0), Quaternion.identity);
                 map[i][j].GetComponent<Piece>().setX(i);
                 map[i][j].GetComponent<Piece>().setY(j);
-
             }
         }
         //ubicar camara centrada sobre el mapa independientemente de la dimesion
         Camera.main.transform.position = new Vector3((float)width / 2 -0.5f, (float)height / 2 -0.5f, -10);
-
         //rellenar bombas
         for (int i = 0; i < bombsNumber; i++){
 
@@ -82,7 +77,6 @@ public class Generator : MonoBehaviour{
     public int GetBombsAround(int x, int y) {
 
         int cont = 0;
-
         //no estoy en una esquina Y arriba izquierda
         if (x > 0 && y < height - 1 && map[x - 1][y + 1].GetComponent<Piece>().isBomb()) cont++;
         //encima
@@ -139,10 +133,10 @@ public class Generator : MonoBehaviour{
                     Destroy(map[i][j]);
                 }
             }
-        
         }
     }
     public int getBombs() {
+
         return bombsNumber;
     }
 }
