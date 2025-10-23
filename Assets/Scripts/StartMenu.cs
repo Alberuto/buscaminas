@@ -37,12 +37,13 @@ public class StartMenu : MonoBehaviour{
  
 Falta por hacer: 
 
-1.- Mostar el mensaje de victoria una vez detectadas y flageadas todas las bombas
+(X) 1.- Mostar el mensaje de victoria una vez detectadas (flageadas) todas las bombas
 
-2.- Mostrar el boton de Empezar de nuevo para cargar la interfaz principal y volver a poder jugar
+2.- Que el boton de Empezar sirva para volver a poder jugar (podria preguntarse si con el mismo tablero o modificar)
 
-3.- Que no escriba banderas en casillas abiertas o con numeros
-4.- Que no escriba banderas una vez has perdido la partida
+(X) 3.- Que no escriba banderas en casillas abiertas o con numeros
+
+4.- Que no escriba/borre banderas una vez has perdido/ganado la partida
 
 5.- Control de errores: 
 

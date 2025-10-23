@@ -107,7 +107,7 @@ public class Piece : MonoBehaviour {
 
         if (hit.collider != null && hit.collider.gameObject == this.gameObject) {
 
-            if (!flaged && GameManager.instance.flagsRemaining > 0)
+            if (!flaged && GameManager.instance.flagsRemaining > 0 && !isCheck())
             {
                 DrawFlag();
                 GameManager.instance.flagsMinus();
