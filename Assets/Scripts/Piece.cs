@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 //Script de la pieza, 
 public class Piece : MonoBehaviour {
 
-    [SerializeField] private int x, y, bombsDetected=0;
+    [SerializeField] private int x, y;
     [SerializeField] private bool bomb, check, flaged;
 
     public void setX(int x) { 
@@ -35,7 +35,7 @@ public class Piece : MonoBehaviour {
     }
     private void OnMouseDown() {
 
-        if(!GameManager.instance.endGame)
+        if(!GameManager.instance.endGame && !flaged)
             DrawBomb();
 
     }
@@ -109,41 +109,17 @@ public class Piece : MonoBehaviour {
 
         if (hit.collider != null && hit.collider.gameObject == this.gameObject) {
 
-            if (!flaged && GameManager.instance.flagsRemaining > 0 && !isCheck())
-            {
-                DrawFlag();
-                GameManager.instance.flagsMinus();
+            if (!flaged && GameManager.instance.flagsRemaining > 0 && !isCheck()){
 
-                if (isBomb())
-                    bombsDetected++;
+                DrawFlag();
+                GameManager.instance.FlagPlaced(isBomb());
             }
             else if (flaged){
 
                 EraseFlag();
-                GameManager.instance.flagsPlus();
-
-
-
-                if (isBomb())
-                    bombsDetected--;
+                GameManager.instance.FlagRemoved(isBomb());
             }
         }
-        if (bombsDetected == Generator.gen.bombsNumber && GameManager.instance.flags() == 0){
-
-            Debug.Log("¡Has ganado!");
-            GameManager.instance.endGame = true;
-            GameManager.instance.endMenu.SetActive(true);
-
-            Transform victoria = GameManager.instance.endMenu.transform.Find("Victoria");
-            Transform derrota = GameManager.instance.endMenu.transform.Find("Derrota");
-
-            derrota.gameObject.SetActive(false);
-            victoria.gameObject.SetActive(true);
-
-
-        }
-
-        Debug.Log("Banderas restantes: " + GameManager.instance.flagsRemaining);
     }
     public void DrawFlag() {
 

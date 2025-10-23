@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour{
     public static GameManager instance;
     public int flagsRemaining;
 
+    public int bombsFlaggedCorrectly=0;
+
     private void Awake(){
 
         if (instance == null){
@@ -32,6 +34,7 @@ public class GameManager : MonoBehaviour{
         startMenu.SetActive(true);
         endMenu.SetActive(false);
         endGame = false;
+        bombsFlaggedCorrectly = 0;
 
     }
     public void GameStart() {
@@ -54,12 +57,35 @@ public class GameManager : MonoBehaviour{
 
         }
     }
-    public void flagsMinus(){
+    public void FlagPlaced(bool isBomb){
+
+        if (isBomb) bombsFlaggedCorrectly++;
+        flagsRemaining--;
+        CheckVictory();
+    }
+    public void FlagRemoved(bool isBomb){
+
+        if (isBomb) bombsFlaggedCorrectly--;
+        flagsRemaining++;
+    }
+    public void CheckVictory(){
+
+        if (bombsFlaggedCorrectly == Generator.gen.bombsNumber && flagsRemaining == 0){
+
+            endGame = true;
+            endMenu.SetActive(true);
+            Transform victoria = endMenu.transform.Find("Victoria");
+            Transform derrota = endMenu.transform.Find("Derrota");
+            victoria.gameObject.SetActive(true);
+            derrota.gameObject.SetActive(false);
+        }
+    }
+   /* public void flagsMinus(){
         flagsRemaining--;
     }
     public void flagsPlus(){
         flagsRemaining++;
-    }
+    }*/
     public int flags() {
         return flagsRemaining;
     }

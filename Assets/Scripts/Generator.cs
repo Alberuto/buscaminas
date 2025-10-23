@@ -142,4 +142,7 @@ public class Generator : MonoBehaviour{
         
         }
     }
+    public int getBombs() {
+        return bombsNumber;
+    }
 }
