@@ -58,6 +58,9 @@ public class Piece : MonoBehaviour {
 
                 derrota.gameObject.SetActive(true);
                 victoria.gameObject.SetActive(false);
+
+                Generator.gen.RevealAllBombs();
+
             }
             else {
 
@@ -68,14 +71,36 @@ public class Piece : MonoBehaviour {
                     var textComponent = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
                     textComponent.text = bombsNumer.ToString();
 
-                    if (bombsNumer == 1)
-                        textComponent.color = Color.white;                  
-                    if (bombsNumer == 2)
-                        textComponent.color = Color.yellow;
-                    if (bombsNumer == 3)
-                        textComponent.color= Color.orange;
-                    if (bombsNumer >= 4)
-                        textComponent.color = Color.red;
+                    switch (bombsNumer){
+
+                        case 1:
+                            textComponent.color = Color.gray;
+                            break;
+                        case 2:
+                            textComponent.color = Color.blue;
+                            break;
+                        case 3:
+                            textComponent.color = Color.magenta;
+                            break;
+                        case 4:
+                            textComponent.color = Color.red;
+                            break;
+                        case 5:
+                            textComponent.color = Color.green; 
+                            break;
+                        case 6:
+                            textComponent.color = Color.cyan;
+                            break;
+                        case 7:
+                            textComponent.color = Color.yellow;
+                            break;
+                        case 8:
+                            textComponent.color = Color.black;
+                            break;
+                        default:
+                            textComponent.color = Color.white;        
+                            break;
+                    }
                 }
                 else { 
 

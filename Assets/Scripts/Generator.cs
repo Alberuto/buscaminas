@@ -139,4 +139,25 @@ public class Generator : MonoBehaviour{
 
         return bombsNumber;
     }
+    public void RevealAllBombs(){
+
+        for (int i = 0; i < width; i++){
+
+            for (int j = 0; j < height; j++){
+
+                Piece piece = map[i][j].GetComponent<Piece>();
+                if (piece.isBomb()){
+
+                    var sr = piece.GetComponent<SpriteRenderer>();
+
+                    // Si no es la pieza que explotó
+                    if (!sr.material.color.Equals(Color.red))
+                        sr.material.color = Color.gray;
+
+                    piece.transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
+                }
+            }
+        }
+    }
+
 }
