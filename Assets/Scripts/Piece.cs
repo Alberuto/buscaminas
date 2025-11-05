@@ -74,16 +74,16 @@ public class Piece : MonoBehaviour {
                     switch (bombsNumer){
 
                         case 1:
-                            textComponent.color = Color.gray;
-                            break;
-                        case 2:
                             textComponent.color = Color.blue;
                             break;
-                        case 3:
+                        case 2:
                             textComponent.color = Color.magenta;
                             break;
-                        case 4:
+                        case 3:
                             textComponent.color = Color.red;
+                            break;
+                        case 4:
+                            textComponent.color = Color.yellow;
                             break;
                         case 5:
                             textComponent.color = Color.green; 
@@ -92,7 +92,7 @@ public class Piece : MonoBehaviour {
                             textComponent.color = Color.cyan;
                             break;
                         case 7:
-                            textComponent.color = Color.yellow;
+                            textComponent.color = Color.gray;
                             break;
                         case 8:
                             textComponent.color = Color.black;
