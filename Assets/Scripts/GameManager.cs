@@ -89,4 +89,29 @@ public class GameManager : MonoBehaviour{
         // Recarga la escena actual al estado inicial
         //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+    public void CheckVictoryByClear(){
+
+        int safePieces = 0;
+        for (int i = 0; i < Generator.gen.width; i++)
+        {
+            for (int j = 0; j < Generator.gen.height; j++)
+            {
+                Piece p = Generator.gen.map[i][j].GetComponent<Piece>();
+                if (!p.isBomb() && p.isCheck())
+                {
+                    safePieces++;
+                }
+            }
+        }
+        int totalSafe = Generator.gen.width * Generator.gen.height - Generator.gen.bombsNumber;
+        if (safePieces == totalSafe)
+        {
+            endGame = true;
+            endMenu.SetActive(true);
+            Transform victoria = endMenu.transform.Find("Victoria");
+            Transform derrota = endMenu.transform.Find("Derrota");
+            victoria.gameObject.SetActive(true);
+            derrota.gameObject.SetActive(false);
+        }
+    }
 }

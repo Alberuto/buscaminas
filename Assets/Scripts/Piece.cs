@@ -106,8 +106,9 @@ public class Piece : MonoBehaviour {
 
                     GetComponent<Renderer>().material.color = Color.gray5;
                     Generator.gen.CheckPieceAround(x, y);
-
                 }
+                // Comprobación de victoria por descubrir todas las casillas no bomba
+                GameManager.instance.CheckVictoryByClear();
             }
         }
     }
