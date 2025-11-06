@@ -9,6 +9,7 @@ public class StartMenu : MonoBehaviour{
     [SerializeField] public TMP_InputField width;
     [SerializeField] public TMP_InputField height;
     [SerializeField] public TMP_InputField bombs;
+    [SerializeField] public TMP_InputField iaTiming;
 
     private int flags;
 

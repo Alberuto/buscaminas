@@ -40,16 +40,31 @@ public class GameManager : MonoBehaviour{
 
         flagsRemaining = (int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
 
+        float iaTime = 0f;
+
+        if (float.TryParse(StartMenu.instance.iaTiming.text, out iaTime)){
+
+            iaTime = Mathf.Max(0f, iaTime);
+        }
+
         if (Generator.gen.Validate() == 0) {
 
             Generator.gen.Generate();
             startMenu.SetActive(false);
-        }
-        else {
 
-            Debug.Log("Error en los parámetros del juego.");
-            //creamos un canvas con el mensaje de error
+            // Configurar la IA
+            AIController ai = FindObjectOfType<AIController>();
 
+            if (ai != null) {
+
+                ai.turnTime = iaTime;
+                ai.enabled = iaTime > 0f;
+                if (ai.enabled) ai.RestartAI();
+            }
+            else {
+
+                Debug.Log("Error en los parámetros del juego.");//canvas error
+            }
         }
     }
     public void FlagPlaced(bool isBomb){
@@ -87,25 +102,35 @@ public class GameManager : MonoBehaviour{
         }
         Start();
         // Recarga la escena actual al estado inicial
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        // Reinicia la IA (agrega esto)
+        var ai = FindObjectOfType<AIController>();
+        if (ai != null){
+
+            if (ai.turnTime > 0f)
+                ai.RestartAI();
+            else
+                ai.enabled = false;
+        }
     }
     public void CheckVictoryByClear(){
 
         int safePieces = 0;
-        for (int i = 0; i < Generator.gen.width; i++)
-        {
-            for (int j = 0; j < Generator.gen.height; j++)
-            {
+
+        for (int i = 0; i < Generator.gen.width; i++) {
+
+            for (int j = 0; j < Generator.gen.height; j++) {
+
                 Piece p = Generator.gen.map[i][j].GetComponent<Piece>();
-                if (!p.isBomb() && p.isCheck())
-                {
+
+                if (!p.isBomb() && p.isCheck()) {
+
                     safePieces++;
                 }
             }
         }
         int totalSafe = Generator.gen.width * Generator.gen.height - Generator.gen.bombsNumber;
-        if (safePieces == totalSafe)
-        {
+        if (safePieces == totalSafe){
+
             endGame = true;
             endMenu.SetActive(true);
             Transform victoria = endMenu.transform.Find("Victoria");

@@ -7,7 +7,7 @@ using UnityEngine.Rendering;
 public class Piece : MonoBehaviour {
 
     [SerializeField] private int x, y;
-    [SerializeField] private bool bomb, check, flaged;
+    [SerializeField] public bool bomb, check, flaged;
 
     public void setX(int x) { 
 
@@ -74,28 +74,28 @@ public class Piece : MonoBehaviour {
                     switch (bombsNumer){
 
                         case 1:
-                            textComponent.color = Color.blue;
+                            textComponent.color = Color.black;
                             break;
                         case 2:
-                            textComponent.color = Color.magenta;
+                            textComponent.color = Color.blue;
                             break;
                         case 3:
-                            textComponent.color = Color.red;
+                            textComponent.color = Color.magenta;
                             break;
                         case 4:
-                            textComponent.color = Color.yellow;
+                            textComponent.color = Color.red;
                             break;
                         case 5:
-                            textComponent.color = Color.green; 
-                            break;
-                        case 6:
                             textComponent.color = Color.cyan;
                             break;
-                        case 7:
+                        case 6:
                             textComponent.color = Color.gray;
                             break;
+                        case 7:
+                            textComponent.color = Color.green;
+                            break;
                         case 8:
-                            textComponent.color = Color.black;
+                            textComponent.color = Color.yellow;
                             break;
                         default:
                             textComponent.color = Color.white;        
