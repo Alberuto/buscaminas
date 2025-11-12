@@ -12,6 +12,58 @@ public class GameManager : MonoBehaviour{
     public static GameManager instance;
     public int flagsRemaining, bombsFlaggedCorrectly=0;
 
+    public int humanWins = 0;
+    public int aiWins = 0;
+    public bool isHumanTurn = true; // true = humano, false = IA
+
+    public void EndGame(bool humanWon) {
+
+        endGame = true;
+        if (humanWon) {
+
+            humanWins++;
+        }
+        else {
+
+            aiWins++;
+        }
+        // Muestra el marcador y reinicia el juego
+        endMenu.SetActive(true);
+        Transform victoria = endMenu.transform.Find("Victoria");
+        Transform derrota = endMenu.transform.Find("Derrota");
+        victoria.gameObject.SetActive(humanWon);
+        derrota.gameObject.SetActive(!humanWon);
+    }
+    public void SwitchTurn() {
+
+        isHumanTurn = !isHumanTurn;
+        if (!isHumanTurn) {
+
+            // Activa la IA
+            AIController ai = FindObjectOfType<AIController>();
+            if (ai != null) {
+
+                ai.enabled = true;
+            }
+        }
+    }
+    public void HumanAction() {
+
+        if (isHumanTurn && !endGame) {
+
+            // Aquí va la lógica de acción del humano
+            // Cuando el humano hace una jugada válida, llama a SwitchTurn()
+            SwitchTurn();
+        }
+    }
+
+    public void AIAction() {
+        if (!isHumanTurn && !endGame) {
+            // Aquí va la lógica de acción de la IA
+            // Cuando la IA hace una jugada válida, llama a SwitchTurn()
+            SwitchTurn();
+        }
+    }
     private void Awake(){
 
         if (instance == null){
@@ -34,18 +86,17 @@ public class GameManager : MonoBehaviour{
     }
     public void GameStart() {
 
+        if (GameManager.instance == null) {
+
+            Debug.LogError("GameManager.instance no está inicializado.");
+            return;
+        }
+       
         Generator.gen.setWidth(int.Parse(StartMenu.instance.width.GetComponentInChildren<TMP_InputField>().text.ToString()));
         Generator.gen.setHeight(int.Parse(StartMenu.instance.height.GetComponentInChildren<TMP_InputField>().text.ToString()));
         Generator.gen.setBombs(int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
 
         flagsRemaining = (int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
-
-        float iaTime = 0f;
-
-        if (float.TryParse(StartMenu.instance.iaTiming.text, out iaTime)){
-
-            iaTime = Mathf.Max(0f, iaTime);
-        }
 
         if (Generator.gen.Validate() == 0) {
 
@@ -57,8 +108,6 @@ public class GameManager : MonoBehaviour{
 
             if (ai != null) {
 
-                ai.turnTime = iaTime;
-                ai.enabled = iaTime > 0f;
                 if (ai.enabled) ai.RestartAI();
             }
             else {
