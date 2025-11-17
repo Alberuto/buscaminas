@@ -1,191 +1,104 @@
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour{
-
-    [SerializeField] GameObject startMenu;
-    [SerializeField] public GameObject endMenu;
-
-    public bool endGame;
+public class GameManager : MonoBehaviour
+{
     public static GameManager instance;
-    public int flagsRemaining, bombsFlaggedCorrectly=0;
 
-    public int humanWins = 0;
-    public int aiWins = 0;
-    public bool isHumanTurn = true; // true = humano, false = IA
+    [Header("Referencias")]
+    [SerializeField] public GameObject endMenuPanel;
 
-    public void EndGame(bool humanWon) {
+    [HideInInspector] public bool endGame = false;
+    [HideInInspector] public bool isHumanTurn = true;
+    [HideInInspector] public int flagsRemaining = 0;
 
-        endGame = true;
-        if (humanWon) {
-
-            humanWins++;
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
         }
-        else {
-
-            aiWins++;
-        }
-        // Muestra el marcador y reinicia el juego
-        endMenu.SetActive(true);
-        Transform victoria = endMenu.transform.Find("Victoria");
-        Transform derrota = endMenu.transform.Find("Derrota");
-        victoria.gameObject.SetActive(humanWon);
-        derrota.gameObject.SetActive(!humanWon);
+        else Destroy(gameObject);
     }
-    public void SwitchTurn() {
+
+    public void GameStart()
+    {
+        Debug.Log("GameStart llamado");
+        endGame = false;
+        isHumanTurn = true;
+        flagsRemaining = Generator.gen.BombsNumber;
+
+        Generator.gen.Generate();
+
+        if (endMenuPanel != null)
+            endMenuPanel.SetActive(false);
+
+        var ai = FindObjectOfType<AIController>();
+        if (ai != null)
+            ai.enabled = false;
+    }
+
+    public void SwitchTurn()
+    {
+        if (endGame) return;
 
         isHumanTurn = !isHumanTurn;
-        if (!isHumanTurn) {
 
-            // Activa la IA
-            AIController ai = FindObjectOfType<AIController>();
-            if (ai != null) {
-
+        if (!isHumanTurn)
+        {
+            var ai = FindObjectOfType<AIController>();
+            if (ai != null && !ai.enabled)
+            {
                 ai.enabled = true;
             }
         }
     }
-    public void HumanAction() {
 
-        if (isHumanTurn && !endGame) {
+    public void EndGame(bool humanWon)
+    {
+        if (endGame) return;
 
-            // Aquí va la lógica de acción del humano
-            // Cuando el humano hace una jugada válida, llama a SwitchTurn()
-            SwitchTurn();
+        endGame = true;
+
+        if (endMenuPanel != null)
+            endMenuPanel.SetActive(true);
+
+        Transform victoria = endMenuPanel.transform.Find("Victoria");
+        Transform derrota = endMenuPanel.transform.Find("Derrota");
+
+        if (victoria != null && derrota != null)
+        {
+            victoria.gameObject.SetActive(humanWon);
+            derrota.gameObject.SetActive(!humanWon);
         }
+
+        StartMenu.instance.AddWin(humanWon);
     }
 
-    public void AIAction() {
-        if (!isHumanTurn && !endGame) {
-            // Aquí va la lógica de acción de la IA
-            // Cuando la IA hace una jugada válida, llama a SwitchTurn()
-            SwitchTurn();
-        }
+    public void ReiniciarJuego()
+    {
+        Generator.gen.DestroyMap();
+        StartMenu.instance.ShowStartMenu();
+        StartMenu.instance.HideEndMenu();
+
+
     }
-    private void Awake(){
 
-        if (instance == null){
-
-            DontDestroyOnLoad(gameObject);
-            instance = this;
-        }
-        else if (instance != this) { 
-            
-            Destroy(gameObject);
-        }
-    }
-    public void Start() {
-
-        DontDestroyOnLoad (gameObject); 
-        startMenu.SetActive(true);
-        endMenu.SetActive(false);
-        endGame = false;
-        bombsFlaggedCorrectly = 0;
-    }
-    public void GameStart() {
-
-        if (GameManager.instance == null) {
-
-            Debug.LogError("GameManager.instance no está inicializado.");
-            return;
-        }
-       
-        Generator.gen.setWidth(int.Parse(StartMenu.instance.width.GetComponentInChildren<TMP_InputField>().text.ToString()));
-        Generator.gen.setHeight(int.Parse(StartMenu.instance.height.GetComponentInChildren<TMP_InputField>().text.ToString()));
-        Generator.gen.setBombs(int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
-
-        flagsRemaining = (int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
-
-        if (Generator.gen.Validate() == 0) {
-
-            Generator.gen.Generate();
-            startMenu.SetActive(false);
-
-            // Configurar la IA
-            AIController ai = FindObjectOfType<AIController>();
-
-            if (ai != null) {
-
-                if (ai.enabled) ai.RestartAI();
-            }
-            else {
-
-                Debug.Log("Error en los parámetros del juego.");//canvas error
-            }
-        }
-    }
-    public void FlagPlaced(bool isBomb){
-
-        if (isBomb) bombsFlaggedCorrectly++;
-        flagsRemaining--;
-        CheckVictory();
-    }
-    public void FlagRemoved(bool isBomb){
-
-        if (isBomb) bombsFlaggedCorrectly--;
-        flagsRemaining++;
-    }
-    public void CheckVictory(){
-
-        if (bombsFlaggedCorrectly == Generator.gen.bombsNumber && flagsRemaining == 0){
-
-            endGame = true;
-            endMenu.SetActive(true);
-            Transform victoria = endMenu.transform.Find("Victoria");
-            Transform derrota = endMenu.transform.Find("Derrota");
-            victoria.gameObject.SetActive(true);
-            derrota.gameObject.SetActive(false);
-        }
-    }
-    public int flags() {
-
-        return flagsRemaining;
-    }
-    public void ReiniciarJuego(){
-
-        if (Generator.gen.map != null) {
-
-            Generator.gen.DestroyMap();
-        }
-        Start();
-        // Recarga la escena actual al estado inicial
-        // Reinicia la IA (agrega esto)
-        var ai = FindObjectOfType<AIController>();
-        if (ai != null){
-
-            if (ai.turnTime > 0f)
-                ai.RestartAI();
-            else
-                ai.enabled = false;
-        }
-    }
-    public void CheckVictoryByClear(){
-
+    public void CheckVictoryByClear()
+    {
         int safePieces = 0;
-
-        for (int i = 0; i < Generator.gen.width; i++) {
-
-            for (int j = 0; j < Generator.gen.height; j++) {
-
-                Piece p = Generator.gen.map[i][j].GetComponent<Piece>();
-
-                if (!p.isBomb() && p.isCheck()) {
-
+        for (int x = 0; x < Generator.gen.Width; x++)
+            for (int y = 0; y < Generator.gen.Height; y++)
+            {
+                Piece p = Generator.gen.Map[x][y].GetComponent<Piece>();
+                if (!p.isBomb() && p.isCheck())
                     safePieces++;
-                }
             }
-        }
-        int totalSafe = Generator.gen.width * Generator.gen.height - Generator.gen.bombsNumber;
-        if (safePieces == totalSafe){
 
-            endGame = true;
-            endMenu.SetActive(true);
-            Transform victoria = endMenu.transform.Find("Victoria");
-            Transform derrota = endMenu.transform.Find("Derrota");
-            victoria.gameObject.SetActive(true);
-            derrota.gameObject.SetActive(false);
+        int totalSafe = Generator.gen.Width * Generator.gen.Height - Generator.gen.BombsNumber;
+        if (safePieces == totalSafe)
+        {
+            EndGame(true);
         }
     }
 }

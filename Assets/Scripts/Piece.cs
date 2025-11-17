@@ -1,159 +1,103 @@
+ï»¿using UnityEngine;
 using TMPro;
-using Unity.VisualScripting;
-using UnityEngine;
-using UnityEngine.Rendering;
 
-//Script de la pieza, 
-public class Piece : MonoBehaviour {
-
+public class Piece : MonoBehaviour
+{
     [SerializeField] private int x, y;
-    [SerializeField] public bool bomb, check, flaged;
+    [HideInInspector] public bool bomb, check, flaged;
 
-    public void setX(int x) { 
+    public void SetX(int val) => x = val;
+    public void SetY(int val) => y = val;
+    public void SetBomb(bool val) => bomb = val;
+    public bool isBomb() => bomb;
+    public int GetX() => x;
+    public int GetY() => y;
+    public bool isCheck() => check;
+    public void SetCheck(bool val) => check = val;
 
-        this.x = x;
-    }
-    public void setY(int y) {
-
-        this.y = y;
-    }
-    public void setBomb(bool bomb) {
-
-        this.bomb = bomb;
-    }
-    public bool isBomb() {
-
-        return bomb;
-    }
-    public int getX() {
-
-        return x;
-    }
-    public int getY() { 
-
-        return y;
-    }
-    private void OnMouseDown() {
-
-        if(!GameManager.instance.endGame && !flaged)
+    private void OnMouseDown()
+    {
+        if (!GameManager.instance.endGame && !flaged && GameManager.instance.isHumanTurn)
             DrawBomb();
     }
-    public void DrawBomb() {
 
-        if (!isCheck()) {
+    public void DrawBomb()
+    {
+        if (isCheck() || GameManager.instance.endGame) return;
 
-            setCheck(true);
+        check = true;
 
-            if (isBomb()) {
+        if (bomb)
+        {
+            GetComponent<SpriteRenderer>().color = Color.red;
+            transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
+            GameManager.instance.endGame = true;
+            GameManager.instance.endMenuPanel.SetActive(true);
 
-                GetComponent<SpriteRenderer>().material.color = Color.red;
-                transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
-                //impide que sigas jugando
-                GameManager.instance.endGame = true;
-                //muestra el mensaje de derrota y desactiva el de victoria (si has ganado antes salen sino)
-                GameManager.instance.endMenu.SetActive(true);
+            Transform victoria = GameManager.instance.endMenuPanel.transform.Find("Victoria");
+            Transform derrota = GameManager.instance.endMenuPanel.transform.Find("Derrota");
 
-                Transform derrota = GameManager.instance.endMenu.transform.Find("Derrota");
-                Transform victoria = GameManager.instance.endMenu.transform.Find("Victoria");
+            victoria.gameObject.SetActive(false);
+            derrota.gameObject.SetActive(true);
 
-                derrota.gameObject.SetActive(true);
-                victoria.gameObject.SetActive(false);
+            Generator.gen.RevealAllBombs();
+        }
+        else
+        {
+            int bombsAround = Generator.gen.GetBombsAround(x, y);
 
-                Generator.gen.RevealAllBombs();
-
+            if (bombsAround > 0)
+            {
+                var text = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
+                text.text = bombsAround.ToString();
             }
-            else {
-
-                int bombsNumer = Generator.gen.GetBombsAround(x, y);
-
-                if (bombsNumer != 0) {
-
-                    var textComponent = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
-                    textComponent.text = bombsNumer.ToString();
-
-                    switch (bombsNumer){
-
-                        case 1:
-                            textComponent.color = Color.black;
-                            break;
-                        case 2:
-                            textComponent.color = Color.blue;
-                            break;
-                        case 3:
-                            textComponent.color = Color.magenta;
-                            break;
-                        case 4:
-                            textComponent.color = Color.red;
-                            break;
-                        case 5:
-                            textComponent.color = Color.cyan;
-                            break;
-                        case 6:
-                            textComponent.color = Color.gray;
-                            break;
-                        case 7:
-                            textComponent.color = Color.green;
-                            break;
-                        case 8:
-                            textComponent.color = Color.yellow;
-                            break;
-                        default:
-                            textComponent.color = Color.white;        
-                            break;
-                    }
-                }
-                else { 
-
-                    GetComponent<Renderer>().material.color = Color.gray5;
-                    Generator.gen.CheckPieceAround(x, y);
-                }
-                // Comprobación de victoria por descubrir todas las casillas no bomba
-                GameManager.instance.CheckVictoryByClear();
+            else
+            {
+                GetComponent<SpriteRenderer>().color = Color.gray;
+                Generator.gen.CheckPieceAround(x, y);
             }
+
+            GameManager.instance.CheckVictoryByClear();
         }
     }
-    public void setCheck(bool v) { 
 
-        this.check = v;
-    }
-    public bool isCheck() {
-
-        return check;
-    }
-    void Update() {
-
-        if (Input.GetMouseButtonDown(1)) {
-
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(1))
             DetectRightClick();
-        }
     }
-    public void DetectRightClick() {
+
+    public void DetectRightClick()
+    {
+        if (!GameManager.instance.isHumanTurn || GameManager.instance.endGame) return;
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
         RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
 
-        if (hit.collider != null && hit.collider.gameObject == this.gameObject &&!GameManager.instance.endGame) {
-
-            if (!flaged && GameManager.instance.flagsRemaining > 0 && !isCheck()){
-
+        if (hit.collider != null && hit.collider.gameObject == this.gameObject)
+        {
+            if (!flaged && GameManager.instance.flagsRemaining > 0 && !check)
+            {
                 DrawFlag();
-                GameManager.instance.FlagPlaced(isBomb());
+                GameManager.instance.flagsRemaining--;
             }
-            else if (flaged){
-
+            else if (flaged)
+            {
                 EraseFlag();
-                GameManager.instance.FlagRemoved(isBomb());
+                GameManager.instance.flagsRemaining++;
             }
         }
     }
-    public void DrawFlag() {
 
+    public void DrawFlag()
+    {
         transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
         flaged = true;
     }
-    public void EraseFlag() {
 
+    public void EraseFlag()
+    {
         transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
         flaged = false;
     }

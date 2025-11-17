@@ -1,45 +1,91 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
-public class StartMenu : MonoBehaviour{
+public class StartMenu : MonoBehaviour
+{
+    [Header("Configuración tablero")]
+    [SerializeField] private TMP_InputField widthInput;
+    [SerializeField] private TMP_InputField heightInput;
+    [SerializeField] private TMP_InputField bombsInput;
 
-    [SerializeField] public TMP_InputField width;
-    [SerializeField] public TMP_InputField height;
-    [SerializeField] public TMP_InputField bombs;
+    [Header("Marcador")]
+    [SerializeField] private TextMeshProUGUI humanWinsText;
+    [SerializeField] private TextMeshProUGUI aiWinsText;
 
-    private int flags;
+    [Header("Referencias")]
+    [SerializeField] private GameObject startMenuPanel;
+    [SerializeField] private GameObject endMenuPanel;
+
 
     public static StartMenu instance;
 
-    public void Start(){
+    private int humanWins = 0;
+    private int aiWins = 0;
 
+    private void Awake()
+    {
         instance = this;
+        ShowStartMenu();
+        UpdateScoreUI();
+    }
 
-        int bombCount;
+    public void ShowStartMenu()
+    {
+        startMenuPanel.SetActive(true);
+        Debug.Log("Mostrando menú");
 
-        if (int.TryParse(bombs.text, out bombCount)){
+    }
 
-            flags = bombCount;
+    public void HideStartMenu()
+    {
+        startMenuPanel.SetActive(false);
+        
+            Debug.Log("Ocultando menú");        
+
+    }
+    public void ShowEndMenu() {
+
+        endMenuPanel.SetActive(true);
+        Debug.Log("Mostrando menú");
+    }
+    public void HideEndMenu() {
+
+        endMenuPanel.SetActive(false);
+        Debug.Log("Ocultando menú final partida");
+    }
+    public void OnStartButtonPressed()
+    {
+        Debug.Log("Botón Start Game presionado");
+
+        int width = int.Parse(widthInput.text);
+        int height = int.Parse(heightInput.text);
+        int bombs = int.Parse(bombsInput.text);
+
+        Generator.gen.SetWidth(width);
+        Generator.gen.SetHeight(height);
+        Generator.gen.SetBombs(bombs);
+
+        if (Generator.gen.Validate() != 0)
+        {
+            Debug.LogError("Valores del tablero inválidos");
+            return;
         }
+        Debug.Log("Ocultando menú");
+        HideStartMenu();
+        GameManager.instance.GameStart();
+    }
+    public void AddWin(bool humanWon)
+    {
+        if (humanWon) humanWins++;
+        else aiWins++;
+
+        UpdateScoreUI();
+    }
+
+    private void UpdateScoreUI()
+    {
+        humanWinsText.text = "Jugador: " + humanWins;
+        aiWinsText.text = "Bot: " + aiWins;
     }
 }
-
-/* 
- * 
-Falta por hacer: 
-
-(X) 1.- Mostar el mensaje de victoria una vez detectadas (flageadas) todas las bombas
-(X) 2.- Que el boton de Empezar sirva para volver a poder jugar (podria preguntarse si con el mismo tablero o modificar)
-(X) 3.- Que no escriba banderas en casillas abiertas o con numeros
-(X) 4.- Que no escriba/borre banderas una vez has perdido/ganado la partida
-
-5.- Control de errores: 
-
-a) poner mas bombas que casillas
-b) hacer un panel mas grande que la pantalla
-c) Resumen: Slider de FCO.
-d) No obstante hay un codigo de error por consola y no deja iniciar la partida.
-*/
