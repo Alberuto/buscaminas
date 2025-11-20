@@ -6,7 +6,7 @@ using System.Linq;
 public class AIController : MonoBehaviour
 {
     [Header("IA por turnos")]
-    [SerializeField] private float moveDelay = 0.5f; // Retraso visual fijo
+    private float moveDelay = 2.5f; // Retraso visual fijo
 
     private bool isPlaying = false;
 
@@ -31,14 +31,15 @@ public class AIController : MonoBehaviour
             if (!opened)
                 opened = RandomPlay();
 
-            if (opened)
+           /* if (opened)
                 GameManager.instance.SwitchTurn();
 
-            yield return null;
+            yield return null;*/
         }
-
         isPlaying = false;
         enabled = false; // Solo desactivar cuando termine el juego
+        GameManager.instance.SwitchTurn();
+
     }
 
     // Abre casillas lógicas seguras primero
@@ -104,8 +105,8 @@ public class AIController : MonoBehaviour
         var map = Generator.gen.Map;
 
         for (int dx = -1; dx <= 1; dx++)
-            for (int dy = -1; dy <= 1; dy++)
-            {
+            for (int dy = -1; dy <= 1; dy++) {
+
                 if (dx == 0 && dy == 0) continue;
                 int nx = x + dx;
                 int ny = y + dy;

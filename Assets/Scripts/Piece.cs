@@ -50,6 +50,36 @@ public class Piece : MonoBehaviour
             {
                 var text = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
                 text.text = bombsAround.ToString();
+                // Aplicar color según el número
+                switch (bombsAround) {
+                    case 1:
+                        text.color = Color.blue;
+                        break;
+                    case 2:
+                        text.color = Color.magenta;
+                        break;
+                    case 3:
+                        text.color = Color.red;
+                        break;
+                    case 4:
+                        text.color = Color.yellow;
+                        break;
+                    case 5:
+                        text.color = Color.green;
+                        break;
+                    case 6:
+                        text.color = Color.cyan;
+                        break;
+                    case 7:
+                        text.color = Color.gray;
+                        break;
+                    case 8:
+                        text.color = Color.black;
+                        break;
+                    default:
+                        text.color = Color.white;
+                        break;
+                }
             }
             else
             {
@@ -58,6 +88,7 @@ public class Piece : MonoBehaviour
             }
 
             GameManager.instance.CheckVictoryByClear();
+            GameManager.instance.SwitchTurn();
         }
     }
 
@@ -89,15 +120,11 @@ public class Piece : MonoBehaviour
             }
         }
     }
-
-    public void DrawFlag()
-    {
+    public void DrawFlag() {
         transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
         flaged = true;
     }
-
-    public void EraseFlag()
-    {
+    public void EraseFlag() {
         transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
         flaged = false;
     }
