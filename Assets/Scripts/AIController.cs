@@ -15,11 +15,10 @@ public class AIController : MonoBehaviour
     }
     private IEnumerator PlayTurns() {
 
-
         while (!GameManager.instance.endGame && !GameManager.instance.isHumanTurn) {
 
-           /* while (GameManager.instance.isHumanTurn) // Espera activo pero no bloquea frame
-                yield return null;*/
+            while (GameManager.instance.isHumanTurn) // Espera activo pero no bloquea frame
+                yield return null;
 
             yield return new WaitForSeconds(moveDelay);
 
@@ -27,15 +26,9 @@ public class AIController : MonoBehaviour
             if (!opened)
                 opened = RandomPlay();
 
-            /* if (opened)
-                 GameManager.instance.SwitchTurn();
-             yield return null;*/
             enabled = false;
         }
-       // GameManager.instance.SwitchTurn();
-
     }
-
     // Abre casillas lógicas seguras primero
     private bool LogicPlay() {
 
@@ -43,10 +36,9 @@ public class AIController : MonoBehaviour
         int height = Generator.gen.Height;
         var map = Generator.gen.Map;
 
-        for (int x = 0; x < width; x++)
-        {
-            for (int y = 0; y < height; y++)
-            {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+
                 Piece p = map[x][y].GetComponent<Piece>();
                 if (!p.isCheck()) continue;
 
@@ -57,17 +49,15 @@ public class AIController : MonoBehaviour
                 var hidden = neighbors.Where(c => !c.isCheck()).ToList();
                 int flagged = neighbors.Count(c => c.flaged);
 
-                if (bombsAround == flagged && hidden.Count > 0)
-                {
+                if (bombsAround == flagged && hidden.Count > 0) {
+
                     foreach (var c in hidden)
                         c.DrawBomb();
-
+                    GameManager.instance.SwitchTurn();
                     return true; // abre una vez por turno
                 }
             }
         }
-
-
         return false;
     }
     // Abre una casilla al azar si no hay jugadas lógicas
@@ -83,10 +73,9 @@ public class AIController : MonoBehaviour
                 if (!map[x][y].GetComponent<Piece>().isCheck())
                     candidates.Add(map[x][y].GetComponent<Piece>());
 
-
         var pick = candidates[Random.Range(0, candidates.Count)];
         pick.DrawBomb();
-
+        GameManager.instance.SwitchTurn(); //la IA cambia el turno cuando juega random
         // if (candidates.Count == 0) return false;
         return true;
     }
@@ -98,7 +87,7 @@ public class AIController : MonoBehaviour
         int height = Generator.gen.Height;
         var map = Generator.gen.Map;
 
-        for (int dx = -1; dx <= 1; dx++)
+        for (int dx = -1; dx <= 1; dx++) {
             for (int dy = -1; dy <= 1; dy++) {
                 if (dx == 0 && dy == 0) continue;
                 int nx = x + dx;
@@ -106,6 +95,7 @@ public class AIController : MonoBehaviour
                 if (nx >= 0 && nx < width && ny >= 0 && ny < height)
                     neighbors.Add(map[nx][ny].GetComponent<Piece>());
             }
+        }
         return neighbors;
     }
 }

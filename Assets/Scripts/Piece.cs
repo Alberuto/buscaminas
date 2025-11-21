@@ -19,6 +19,7 @@ public class Piece : MonoBehaviour
 
         if (!GameManager.instance.endGame && !flaged && GameManager.instance.isHumanTurn)
             DrawBomb();
+        GameManager.instance.SwitchTurn(); //el jugador cede el turno
     }
     public void DrawBomb() {
 
@@ -32,16 +33,15 @@ public class Piece : MonoBehaviour
             Generator.gen.RevealAllBombs();
             GameManager.instance.EndGame(!GameManager.instance.isHumanTurn);
         }
-        else
-        {
+        else {
+
             int bombsAround = Generator.gen.GetBombsAround(x, y);
 
             if (bombsAround > 0) {
 
                 var text = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
                 text.text = bombsAround.ToString();
-                // Aplicar color según el número
-                switch (bombsAround) {
+                switch (bombsAround) { // Aplicar color según el número
 
                     case 1:
                         text.color = Color.blue;
@@ -73,14 +73,9 @@ public class Piece : MonoBehaviour
                 }
             }
             else {
-
-
                 GetComponent<SpriteRenderer>().color = Color.gray;
                 Generator.gen.CheckPieceAround(x, y);
-
-
             }
-            GameManager.instance.SwitchTurn();
             GameManager.instance.CheckVictoryByClear();
         }
     }
@@ -96,15 +91,15 @@ public class Piece : MonoBehaviour
         Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
         RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
 
-        if (hit.collider != null && hit.collider.gameObject == this.gameObject)
-        {
-            if (!flaged && GameManager.instance.flagsRemaining > 0 && !check)
-            {
+        if (hit.collider != null && hit.collider.gameObject == this.gameObject) {
+
+            if (!flaged && GameManager.instance.flagsRemaining > 0 && !check) {
+
                 DrawFlag();
                 GameManager.instance.flagsRemaining--;
             }
-            else if (flaged)
-            {
+            else if (flaged) {
+
                 EraseFlag();
                 GameManager.instance.flagsRemaining++;
             }
