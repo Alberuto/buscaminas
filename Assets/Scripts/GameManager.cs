@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
@@ -58,6 +58,9 @@ public class GameManager : MonoBehaviour
     {
         if (endGame) return;
 
+        Debug.Log("valor de boleano de partida:" + humanWon);
+        StartMenu.instance.AddWin(humanWon);
+
         endGame = true;
 
         if (endMenuPanel != null)
@@ -66,13 +69,11 @@ public class GameManager : MonoBehaviour
         Transform victoria = endMenuPanel.transform.Find("Victoria");
         Transform derrota = endMenuPanel.transform.Find("Derrota");
 
-        if (victoria != null && derrota != null)
-        {
+        if (victoria != null && derrota != null) {
+
             victoria.gameObject.SetActive(humanWon);
             derrota.gameObject.SetActive(!humanWon);
         }
-
-        StartMenu.instance.AddWin(humanWon);
     }
 
     public void ReiniciarJuego()
@@ -96,9 +97,10 @@ public class GameManager : MonoBehaviour
             }
 
         int totalSafe = Generator.gen.Width * Generator.gen.Height - Generator.gen.BombsNumber;
-        if (safePieces == totalSafe)
-        {
+        if (safePieces == totalSafe) {
+
             EndGame(true);
+
         }
     }
 }

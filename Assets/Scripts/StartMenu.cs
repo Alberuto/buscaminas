@@ -1,10 +1,10 @@
-using TMPro;
+ï»¿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StartMenu : MonoBehaviour
-{
-    [Header("Configuración tablero")]
+public class StartMenu : MonoBehaviour {
+
+    [Header("Configuraciï¿½n tablero")]
     [SerializeField] private TMP_InputField widthInput;
     [SerializeField] private TMP_InputField heightInput;
     [SerializeField] private TMP_InputField bombsInput;
@@ -17,46 +17,40 @@ public class StartMenu : MonoBehaviour
     [SerializeField] private GameObject startMenuPanel;
     [SerializeField] private GameObject endMenuPanel;
 
-
     public static StartMenu instance;
 
     private int humanWins = 0;
     private int aiWins = 0;
 
-    private void Awake()
-    {
+    private void Awake() {
+
         instance = this;
         ShowStartMenu();
         UpdateScoreUI();
     }
+    public void ShowStartMenu() {
 
-    public void ShowStartMenu()
-    {
         startMenuPanel.SetActive(true);
-        Debug.Log("Mostrando menú");
-
+        Debug.Log("Mostrando menu");
     }
+    public void HideStartMenu() {
 
-    public void HideStartMenu()
-    {
         startMenuPanel.SetActive(false);
-        
-            Debug.Log("Ocultando menú");        
-
+        Debug.Log("Ocultando menu");
     }
     public void ShowEndMenu() {
 
         endMenuPanel.SetActive(true);
-        Debug.Log("Mostrando menú");
+        Debug.Log("Mostrando menu");
     }
     public void HideEndMenu() {
 
         endMenuPanel.SetActive(false);
-        Debug.Log("Ocultando menú final partida");
+        Debug.Log("Ocultando menu de final partida");
     }
-    public void OnStartButtonPressed()
-    {
-        Debug.Log("Botón Start Game presionado");
+    public void OnStartButtonPressed() {
+
+        Debug.Log("Botï¿½n Start Game presionado");
 
         int width = int.Parse(widthInput.text);
         int height = int.Parse(heightInput.text);
@@ -66,25 +60,23 @@ public class StartMenu : MonoBehaviour
         Generator.gen.SetHeight(height);
         Generator.gen.SetBombs(bombs);
 
-        if (Generator.gen.Validate() != 0)
-        {
-            Debug.LogError("Valores del tablero inválidos");
+        if (Generator.gen.Validate() != 0) {
+
+            Debug.LogError("Valores del tablero invï¿½lidos");
             return;
         }
-        Debug.Log("Ocultando menú");
         HideStartMenu();
         GameManager.instance.GameStart();
     }
-    public void AddWin(bool humanWon)
-    {
-        if (humanWon) humanWins++;
-        else aiWins++;
+    public void AddWin(bool humanWon) {
 
+        Debug.Log("victoria humana? " + humanWon);
+        if (humanWon) humanWins++;
+                 else aiWins++;
         UpdateScoreUI();
     }
+    private void UpdateScoreUI() {
 
-    private void UpdateScoreUI()
-    {
         humanWinsText.text = "Jugador: " + humanWins;
         aiWinsText.text = "Bot: " + aiWins;
     }

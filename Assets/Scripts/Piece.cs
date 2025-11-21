@@ -15,43 +15,34 @@ public class Piece : MonoBehaviour
     public bool isCheck() => check;
     public void SetCheck(bool val) => check = val;
 
-    private void OnMouseDown()
-    {
+    private void OnMouseDown() {
+
         if (!GameManager.instance.endGame && !flaged && GameManager.instance.isHumanTurn)
             DrawBomb();
     }
+    public void DrawBomb() {
 
-    public void DrawBomb()
-    {
         if (isCheck() || GameManager.instance.endGame) return;
 
         check = true;
 
-        if (bomb)
-        {
+        if (bomb) {
+
             GetComponent<SpriteRenderer>().color = Color.red;
-            transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
-            GameManager.instance.endGame = true;
-            GameManager.instance.endMenuPanel.SetActive(true);
-
-            Transform victoria = GameManager.instance.endMenuPanel.transform.Find("Victoria");
-            Transform derrota = GameManager.instance.endMenuPanel.transform.Find("Derrota");
-
-            victoria.gameObject.SetActive(false);
-            derrota.gameObject.SetActive(true);
-
             Generator.gen.RevealAllBombs();
+            GameManager.instance.EndGame(!GameManager.instance.isHumanTurn);
         }
         else
         {
             int bombsAround = Generator.gen.GetBombsAround(x, y);
 
-            if (bombsAround > 0)
-            {
+            if (bombsAround > 0) {
+
                 var text = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
                 text.text = bombsAround.ToString();
                 // Aplicar color según el número
                 switch (bombsAround) {
+
                     case 1:
                         text.color = Color.blue;
                         break;
@@ -81,25 +72,24 @@ public class Piece : MonoBehaviour
                         break;
                 }
             }
-            else
-            {
+            else {
+
+
                 GetComponent<SpriteRenderer>().color = Color.gray;
                 Generator.gen.CheckPieceAround(x, y);
-            }
 
-            GameManager.instance.CheckVictoryByClear();
+
+            }
             GameManager.instance.SwitchTurn();
+            GameManager.instance.CheckVictoryByClear();
         }
     }
-
-    private void Update()
-    {
+    private void Update() {
         if (Input.GetMouseButtonDown(1))
             DetectRightClick();
     }
+    public void DetectRightClick() {
 
-    public void DetectRightClick()
-    {
         if (!GameManager.instance.isHumanTurn || GameManager.instance.endGame) return;
 
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
