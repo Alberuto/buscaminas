@@ -32,6 +32,10 @@ public class Piece : MonoBehaviour
 
         if (isCheck() || GameManager.instance.endGame) return;
 
+        if (flaged) {
+            EraseFlag();  // Quita la bandera visual y estado
+        }
+
         check = true;
 
         if (bomb) {
@@ -84,6 +88,7 @@ public class Piece : MonoBehaviour
                 Generator.gen.CheckPieceAround(x, y);
             }
             GameManager.instance.CheckVictoryByClear();
+            GameManager.instance.flagPlacedThisTurn = false;
         }
     }
     private void Update() {
@@ -113,12 +118,18 @@ public class Piece : MonoBehaviour
         }
     }
     public void DrawFlag() {
+        if (GameManager.instance.flagPlacedThisTurn) { // No permitir poner otra bandera
+            Debug.Log("Solo puedes poner una bandera por turno.");
+            return; 
+        }
         transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
         flaged = true;
+        GameManager.instance.flagPlacedThisTurn = true;
         GameManager.instance.CheckVictoryByFlags();
     }
     public void EraseFlag() {
         transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
         flaged = false;
+        GameManager.instance.flagPlacedThisTurn = false;
     }
 }

@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     [HideInInspector] public bool endGame = false;
     [HideInInspector] public bool isHumanTurn = true;
     [HideInInspector] public int flagsRemaining = 0;
+    [HideInInspector] public bool flagPlacedThisTurn = false;
 
     private void Awake() {
 
@@ -89,7 +90,7 @@ public class GameManager : MonoBehaviour
         }
         int totalSafe = Generator.gen.Width * Generator.gen.Height - Generator.gen.BombsNumber;
         if (safePieces == totalSafe) {
-
+            Generator.gen.RevealAllBombs();
             EndGame(GameManager.instance.isHumanTurn);
         }
     }
@@ -109,6 +110,7 @@ public class GameManager : MonoBehaviour
         if (flagsCount == Generator.gen.BombsNumber && correctFlags == Generator.gen.BombsNumber) {
             // Ganó el jugador que marca correctamente todas las bombas
             GameManager.instance.EndGame(true); // Asume victoria humana
+            Generator.gen.RevealAllBombs();
         }
     }
 }
