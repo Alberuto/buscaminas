@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour
     private void Awake() {
 
         if (instance == null) {
-
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -68,7 +67,6 @@ public class GameManager : MonoBehaviour
         Transform derrota = endMenuPanel.transform.Find("Derrota");
 
         if (victoria != null && derrota != null) {
-
             victoria.gameObject.SetActive(humanWon);
             derrota.gameObject.SetActive(!humanWon);
         }
@@ -92,7 +90,25 @@ public class GameManager : MonoBehaviour
         int totalSafe = Generator.gen.Width * Generator.gen.Height - Generator.gen.BombsNumber;
         if (safePieces == totalSafe) {
 
-            EndGame(true);
+            EndGame(GameManager.instance.isHumanTurn);
+        }
+    }
+    public void CheckVictoryByFlags() {
+        int correctFlags = 0;
+        int flagsCount = 0;
+
+        for (int x = 0; x < Generator.gen.Width; x++) {
+            for (int y = 0; y < Generator.gen.Height; y++) {
+                Piece p = Generator.gen.Map[x][y].GetComponent<Piece>();
+                if (p.flaged) {
+                    flagsCount++;
+                    if (p.isBomb()) correctFlags++;
+                }
+            }
+        }
+        if (flagsCount == Generator.gen.BombsNumber && correctFlags == Generator.gen.BombsNumber) {
+            // Ganó el jugador que marca correctamente todas las bombas
+            GameManager.instance.EndGame(true); // Asume victoria humana
         }
     }
 }

@@ -46,18 +46,26 @@ public class AIController : MonoBehaviour
                 if (bombsAround == 0) continue;
 
                 List<Piece> neighbors = GetNeighbors(x, y);
-                var hidden = neighbors.Where(c => !c.isCheck()).ToList();
-                int flagged = neighbors.Count(c => c.flaged);
+                var hidden = neighbors.Where(c => !c.isCheck() && !c.IsMarkedByAI()).ToList();
+                var marked = neighbors.Where(c => c.IsMarkedByAI()).ToList();
 
-                if (bombsAround == flagged && hidden.Count > 0) {
+                if (bombsAround == hidden.Count + marked.Count && hidden.Count > 0) {
+                    foreach (var mine in hidden) mine.MarkByAI();
+                    Debug.Log("IA marcó minas lógicas");
+                }
+                else if (bombsAround == marked.Count && hidden.Count > 0) {
+                    // Todas las ocultas son seguras
+                    foreach (var safe in hidden)
+                        OpenPieceSafe(safe);
 
-                    foreach (var c in hidden)
-                        c.DrawBomb();
-                    GameManager.instance.SwitchTurn();
-                    return true; // abre una vez por turno
+                    GameManager.instance.CheckVictoryByClear();
+                    GameManager.instance.SwitchTurn(); //La IA cambia el turno cuando juega lógico
+                    Debug.Log("Jugadas lógicas seguras realizadas");
+                    return true;
                 }
             }
         }
+        Debug.Log("jugada logica descartada");
         return false;
     }
     // Abre una casilla al azar si no hay jugadas lógicas
@@ -75,8 +83,9 @@ public class AIController : MonoBehaviour
 
         var pick = candidates[Random.Range(0, candidates.Count)];
         pick.DrawBomb();
+        GameManager.instance.CheckVictoryByClear();
         GameManager.instance.SwitchTurn(); //la IA cambia el turno cuando juega random
-        // if (candidates.Count == 0) return false;
+        Debug.Log("jugada random realizada");
         return true;
     }
     // Obtiene vecinas de una casilla
@@ -97,5 +106,12 @@ public class AIController : MonoBehaviour
             }
         }
         return neighbors;
+    }
+    private void OpenPieceSafe(Piece p) {
+
+        p.DrawBomb();
+        if (Generator.gen.GetBombsAround(p.GetX(), p.GetY()) == 0) {
+            Generator.gen.CheckPieceAround(p.GetX(), p.GetY()); // abrir en cascada para ceros
+        }
     }
 }

@@ -15,6 +15,13 @@ public class Piece : MonoBehaviour
     public bool isCheck() => check;
     public void SetCheck(bool val) => check = val;
 
+    private bool markedByAI = false;
+    public bool IsMarkedByAI() => markedByAI;
+    public void MarkByAI() {
+
+        markedByAI = true;
+        // Opcional: activa una visualización distintiva, por ejemplo una bandera especial IA, aunque daria pistas al humano por ende descarto idea
+    }
     private void OnMouseDown() {
 
         if (!GameManager.instance.endGame && !flaged && GameManager.instance.isHumanTurn)
@@ -108,6 +115,7 @@ public class Piece : MonoBehaviour
     public void DrawFlag() {
         transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
         flaged = true;
+        GameManager.instance.CheckVictoryByFlags();
     }
     public void EraseFlag() {
         transform.GetChild(0).GetChild(2).gameObject.SetActive(false);

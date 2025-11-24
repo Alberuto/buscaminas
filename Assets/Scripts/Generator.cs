@@ -74,8 +74,12 @@ public class Generator : MonoBehaviour {
 
                 if (dx == 0 && dy == 0) continue;
                 int nx = x + dx, ny = y + dy;
-                if (nx >= 0 && nx < Width && ny >= 0 && ny < Height)
-                    Map[nx][ny].GetComponent<Piece>().DrawBomb();
+                if (nx >= 0 && nx < Width && ny >= 0 && ny < Height) {
+                    Piece neighbor = Map[nx][ny].GetComponent<Piece>();
+                    if (!neighbor.isCheck() && !neighbor.IsMarkedByAI()) {
+                         neighbor.DrawBomb();
+                    }
+                }
             }
         }
     }

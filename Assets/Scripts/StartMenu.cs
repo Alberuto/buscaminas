@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class StartMenu : MonoBehaviour {
 
-    [Header("Configuraci�n tablero")]
+    [Header("Configuración tablero")]
     [SerializeField] private TMP_InputField widthInput;
     [SerializeField] private TMP_InputField heightInput;
     [SerializeField] private TMP_InputField bombsInput;
@@ -61,8 +61,7 @@ public class StartMenu : MonoBehaviour {
         Generator.gen.SetBombs(bombs);
 
         if (Generator.gen.Validate() != 0) {
-
-            Debug.LogError("Valores del tablero inv�lidos");
+            Debug.LogError("Valores del tablero inválidos");
             return;
         }
         HideStartMenu();
