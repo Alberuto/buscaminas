@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class Generator : MonoBehaviour {
+public class Generator : MonoBehaviour
+{
 
     [SerializeField] private GameObject piecePrefab;
 
@@ -42,14 +43,15 @@ public class Generator : MonoBehaviour {
         Camera.main.transform.position = new Vector3(Width / 2f - 0.5f, Height / 2f - 0.5f, -10);
 
         int placed = 0;
-        while (placed < BombsNumber) {
+        while (placed < BombsNumber) { 
 
             int x = Random.Range(0, Width);
             int y = Random.Range(0, Height);
             var p = Map[x][y].GetComponent<Piece>();
             if (!p.isBomb()) {
-                 p.SetBomb(true);
-                 placed++;
+
+                p.SetBomb(true);
+                placed++;
             }
         }
     }
@@ -77,7 +79,10 @@ public class Generator : MonoBehaviour {
                 if (nx >= 0 && nx < Width && ny >= 0 && ny < Height) {
                     Piece neighbor = Map[nx][ny].GetComponent<Piece>();
                     if (!neighbor.isCheck() && !neighbor.IsMarkedByAI()) {
-                         neighbor.DrawBomb();
+                        if (neighbor.flaged) {
+                            neighbor.EraseFlag(); // elimina bandera visual y actualización estados SASJDFIOJAPDSOFIPOSAJFDIPOSAJDFIPOAJDSFIPOJSFDIPOJASIPOFDJAFDAIPOSDJFIPOASDJFIPOASJFDPOAIJFDIPOAJIPOFDJASF
+                        }
+                        neighbor.DrawBomb();
                     }
                 }
             }

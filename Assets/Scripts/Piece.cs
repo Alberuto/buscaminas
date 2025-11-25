@@ -24,9 +24,10 @@ public class Piece : MonoBehaviour
     }
     private void OnMouseDown() {
 
-        if (!GameManager.instance.endGame && !flaged && GameManager.instance.isHumanTurn)
+        if (!GameManager.instance.endGame && !flaged && GameManager.instance.isHumanTurn) { 
             DrawBomb();
-        GameManager.instance.SwitchTurn(); //el jugador cede el turno
+            GameManager.instance.SwitchTurn(); //el jugador cede el turno
+        }
     }
     public void DrawBomb() {
 
@@ -88,10 +89,10 @@ public class Piece : MonoBehaviour
                 Generator.gen.CheckPieceAround(x, y);
             }
             GameManager.instance.CheckVictoryByClear();
-            GameManager.instance.flagPlacedThisTurn = false;
         }
     }
     private void Update() {
+
         if (Input.GetMouseButtonDown(1))
             DetectRightClick();
     }
@@ -105,31 +106,61 @@ public class Piece : MonoBehaviour
 
         if (hit.collider != null && hit.collider.gameObject == this.gameObject) {
 
-            if (!flaged && GameManager.instance.flagsRemaining > 0 && !check) {
+            if (!flaged && !check) {
 
                 DrawFlag();
-                GameManager.instance.flagsRemaining--;
             }
             else if (flaged) {
 
                 EraseFlag();
-                GameManager.instance.flagsRemaining++;
             }
         }
     }
     public void DrawFlag() {
-        if (GameManager.instance.flagPlacedThisTurn) { // No permitir poner otra bandera
-            Debug.Log("Solo puedes poner una bandera por turno.");
-            return; 
+
+        if (GameManager.instance.maxFlagsAllowed < 1) {
+
+            Debug.Log("Límite de nuevas banderas puestas alcanzado este turno");
+            return;
+        }
+        if (GameManager.instance.maxMovesAllowed < 1) {
+
+            Debug.Log("Límite total de movimientos de bandera alcanzado este turno");
+            return;
+        }
+        if (GameManager.instance.flagsRemaining < 1) {
+
+            Debug.Log("No quedan banderas disponibles");
+            return;
         }
         transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
         flaged = true;
-        GameManager.instance.flagPlacedThisTurn = true;
+
+        GameManager.instance.maxFlagsAllowed--;
+        GameManager.instance.maxMovesAllowed--;
+        GameManager.instance.UpdateFlagsRemaining();
         GameManager.instance.CheckVictoryByFlags();
     }
     public void EraseFlag() {
-        transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
-        flaged = false;
-        GameManager.instance.flagPlacedThisTurn = false;
+
+        if (GameManager.instance.maxMovesAllowed < 1) {
+
+            Debug.Log("Límite total de movimientos de bandera alcanzado este turno");
+            return;
+        }
+        if (GameManager.instance.movementAllowed) {
+
+            flaged = false;
+            transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
+
+            GameManager.instance.movementAllowed = false;
+            GameManager.instance.maxFlagsAllowed++;
+            GameManager.instance.maxMovesAllowed++;
+            GameManager.instance.UpdateFlagsRemaining();
+        }
+        else { //para que borre contenido cuando no es caso ninguno (aperturas multiples desde llamadas desde generator)
+            flaged = false;
+            transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
+        }
     }
 }

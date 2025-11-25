@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
-public class GameManager : MonoBehaviour
-{
+public class GameManager : MonoBehaviour {
+
     public static GameManager instance;
 
     [Header("Referencias")]
@@ -9,12 +9,16 @@ public class GameManager : MonoBehaviour
 
     [HideInInspector] public bool endGame = false;
     [HideInInspector] public bool isHumanTurn = true;
-    [HideInInspector] public int flagsRemaining = 0;
-    [HideInInspector] public bool flagPlacedThisTurn = false;
+
+    [HideInInspector] public int flagsRemaining = 0;    //total de banderas igual a bombas
+    [HideInInspector] public int maxFlagsAllowed = 2;   // Variable dinámica en SwitchTurn
+    [HideInInspector] public int maxMovesAllowed = 3;  // Variable dinámica en SwitchTurn
+    [HideInInspector] public bool movementAllowed = true;
 
     private void Awake() {
 
         if (instance == null) {
+
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
@@ -26,6 +30,9 @@ public class GameManager : MonoBehaviour
         Debug.Log("GameStart llamado");
         endGame = false;
         isHumanTurn = true;
+        movementAllowed = true;
+        maxFlagsAllowed = 2;   // Variable dinámica en SwitchTurn
+        maxMovesAllowed = 3;  // Variable dinámica en
         flagsRemaining = Generator.gen.BombsNumber;
 
         Generator.gen.Generate();
@@ -42,6 +49,14 @@ public class GameManager : MonoBehaviour
         if (endGame) return;
 
         isHumanTurn = !isHumanTurn;
+
+        bool beforeHalf = CountTotalFlags() < Generator.gen.BombsNumber / 2;
+
+        maxFlagsAllowed = beforeHalf ? 2 : 1;
+        maxMovesAllowed = beforeHalf ? 3 : 2;
+        movementAllowed = true;
+
+        UpdateFlagsRemaining();
 
         if (!isHumanTurn) {
 
@@ -68,6 +83,7 @@ public class GameManager : MonoBehaviour
         Transform derrota = endMenuPanel.transform.Find("Derrota");
 
         if (victoria != null && derrota != null) {
+
             victoria.gameObject.SetActive(humanWon);
             derrota.gameObject.SetActive(!humanWon);
         }
@@ -95,6 +111,7 @@ public class GameManager : MonoBehaviour
         }
     }
     public void CheckVictoryByFlags() {
+
         int correctFlags = 0;
         int flagsCount = 0;
 
@@ -107,10 +124,28 @@ public class GameManager : MonoBehaviour
                 }
             }
         }
-        if (flagsCount == Generator.gen.BombsNumber && correctFlags == Generator.gen.BombsNumber) {
+        if (flagsCount == Generator.gen.BombsNumber && correctFlags == Generator.gen.BombsNumber) { 
             // Ganó el jugador que marca correctamente todas las bombas
             GameManager.instance.EndGame(true); // Asume victoria humana
             Generator.gen.RevealAllBombs();
         }
+    }
+    public int CountTotalFlags() {
+        int count = 0;
+        for (int x = 0; x < Generator.gen.Width; x++) {
+            for (int y = 0; y < Generator.gen.Height; y++) {
+
+                if (Generator.gen.Map[x][y].GetComponent<Piece>().flaged) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    //esta mierda de metodos hay que depurarlos ya que no realizan bien su funcion
+    public void UpdateFlagsRemaining() {
+
+        flagsRemaining = Generator.gen.BombsNumber - CountTotalFlags();
     }
 }

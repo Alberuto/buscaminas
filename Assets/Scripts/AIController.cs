@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
-public class AIController : MonoBehaviour
-{
+public class AIController : MonoBehaviour {  
+
     [Header("IA por turnos")]
     private float moveDelay = 2.5f; // Retraso visual fijo
 
@@ -50,6 +50,7 @@ public class AIController : MonoBehaviour
                 var marked = neighbors.Where(c => c.IsMarkedByAI()).ToList();
 
                 if (bombsAround == hidden.Count + marked.Count && hidden.Count > 0) {
+
                     foreach (var mine in hidden) mine.MarkByAI();
                     Debug.Log("IA marcó minas lógicas");
                 }
@@ -108,7 +109,9 @@ public class AIController : MonoBehaviour
         return neighbors;
     }
     private void OpenPieceSafe(Piece p) {
-
+        if (p.flaged) {
+            p.EraseFlag(); // elimina bandera visualmente y actualiza contadores
+        }
         p.DrawBomb();
         if (Generator.gen.GetBombsAround(p.GetX(), p.GetY()) == 0) {
             Generator.gen.CheckPieceAround(p.GetX(), p.GetY()); // abrir en cascada para ceros

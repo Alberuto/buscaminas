@@ -61,6 +61,7 @@ public class StartMenu : MonoBehaviour {
         Generator.gen.SetBombs(bombs);
 
         if (Generator.gen.Validate() != 0) {
+
             Debug.LogError("Valores del tablero inválidos");
             return;
         }
@@ -71,7 +72,7 @@ public class StartMenu : MonoBehaviour {
 
         Debug.Log("victoria humana? " + humanWon);
         if (humanWon) humanWins++;
-                 else aiWins++;
+        else aiWins++;
         UpdateScoreUI();
     }
     private void UpdateScoreUI() {
