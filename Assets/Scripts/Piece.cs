@@ -158,7 +158,9 @@ public class Piece : MonoBehaviour
             GameManager.instance.maxMovesAllowed++;
             GameManager.instance.UpdateFlagsRemaining();
         }
-        else { //para que borre contenido cuando no es caso ninguno (aperturas multiples desde llamadas desde generator)
+
+        //aqui tengo que hacer algo para que desde generator se puedan borrar las casillas que tienen bandera pero ademas no permita borrar mas de una al usuario
+        else if (!GameManager.instance.movementAllowed && GameManager.instance.maxMovesAllowed>0) { //para que borre contenido cuando no es caso ninguno (aperturas multiples desde llamadas desde generator)
             flaged = false;
             transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
         }
