@@ -7,7 +7,9 @@ public class Generator : MonoBehaviour{
     [SerializeField] public int width, height, bombsNumber;
     [SerializeField] public GameObject [][] map;
 
+    public NetworkGameManager game;
     public static Generator gen;
+
     private void Awake(){
 
         gen = this;
@@ -73,7 +75,13 @@ public class Generator : MonoBehaviour{
             }
         }
     }
+    public void RevealPiece(int x, int y, bool isLocalPlayer) {
 
+        if (x < 0 || x >= width || y < 0 || y >= height) return;
+
+        Piece piece = map[x][y].GetComponent<Piece>();
+        piece.DrawBomb();
+    }
     public int GetBombsAround(int x, int y) {
 
         int cont = 0;
@@ -159,5 +167,4 @@ public class Generator : MonoBehaviour{
             }
         }
     }
-
 }

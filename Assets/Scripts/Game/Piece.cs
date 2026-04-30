@@ -3,158 +3,84 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-//Script de la pieza, 
 public class Piece : MonoBehaviour {
 
     [SerializeField] private int x, y;
-    [SerializeField] private bool bomb, check, flaged;
-
+    [SerializeField] private bool bomb, check;
+    private NetworkGameManager netGame;
+    private void Awake() {
+        netGame = FindObjectOfType<NetworkGameManager>();
+    }
     public void setX(int x) { 
-
         this.x = x;
     }
     public void setY(int y) {
-
         this.y = y;
     }
     public void setBomb(bool bomb) {
-
         this.bomb = bomb;
     }
     public bool isBomb() {
-
         return bomb;
     }
     public int getX() {
-
         return x;
     }
     public int getY() { 
-
         return y;
     }
-    private void OnMouseDown() {
-
-        if(!GameManager.instance.endGame && !flaged)
-            DrawBomb();
-    }
-    public void DrawBomb() {
-
-        if (!isCheck()) {
-
-            setCheck(true);
-
-            if (isBomb()) {
-
-                GetComponent<SpriteRenderer>().material.color = Color.red;
-                transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
-                //impide que sigas jugando
-                GameManager.instance.endGame = true;
-                //muestra el mensaje de derrota y desactiva el de victoria (si has ganado antes salen sino)
-                GameManager.instance.endMenu.SetActive(true);
-
-                Transform derrota = GameManager.instance.endMenu.transform.Find("Derrota");
-                Transform victoria = GameManager.instance.endMenu.transform.Find("Victoria");
-
-                derrota.gameObject.SetActive(true);
-                victoria.gameObject.SetActive(false);
-
-                Generator.gen.RevealAllBombs();
-
-            }
-            else {
-
-                int bombsNumer = Generator.gen.GetBombsAround(x, y);
-
-                if (bombsNumer != 0) {
-
-                    var textComponent = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
-                    textComponent.text = bombsNumer.ToString();
-
-                    switch (bombsNumer){
-
-                        case 1:
-                            textComponent.color = Color.blue;
-                            break;
-                        case 2:
-                            textComponent.color = Color.magenta;
-                            break;
-                        case 3:
-                            textComponent.color = Color.red;
-                            break;
-                        case 4:
-                            textComponent.color = Color.yellow;
-                            break;
-                        case 5:
-                            textComponent.color = Color.green; 
-                            break;
-                        case 6:
-                            textComponent.color = Color.cyan;
-                            break;
-                        case 7:
-                            textComponent.color = Color.gray;
-                            break;
-                        case 8:
-                            textComponent.color = Color.black;
-                            break;
-                        default:
-                            textComponent.color = Color.white;        
-                            break;
-                    }
-                }
-                else { 
-
-                    GetComponent<Renderer>().material.color = Color.gray5;
-                    Generator.gen.CheckPieceAround(x, y);
-                }
-                // Comprobación de victoria por descubrir todas las casillas no bomba
-                GameManager.instance.CheckVictoryByClear();
-            }
-        }
-    }
-    public void setCheck(bool v) { 
-
+    public void setCheck(bool v) {
         this.check = v;
     }
     public bool isCheck() {
-
         return check;
     }
-    void Update() {
+    private void OnMouseDown() {
 
-        if (Input.GetMouseButtonDown(1)) {
+        if (netGame != null)
+            netGame.TryTurn(x, y);
+    }
+    public void DrawBomb() {
 
-            DetectRightClick();
+        if (isCheck()) return;
+
+        setCheck(true);
+
+        if (isBomb()) {
+
+            GetComponent<SpriteRenderer>().material.color = Color.red;
+            transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
+            // NO ponemos GameManager.instance.endGame aquí
+            // ni activamos menús; lo hace RPC_Play
+        }
+        else {
+
+            int bombsNumer = Generator.gen.GetBombsAround(x, y);
+            var textComponent = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
+
+            if (bombsNumer != 0) {
+                textComponent.text = bombsNumer.ToString();
+                textComponent.color = GetColorForNumber(bombsNumer);
+            }
+            else {
+                GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 0.5f); // Color.gray5
+                Generator.gen.CheckPieceAround(x, y);
+            }
         }
     }
-    public void DetectRightClick() {
-
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-        RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
-
-        if (hit.collider != null && hit.collider.gameObject == this.gameObject &&!GameManager.instance.endGame) {
-
-            if (!flaged && GameManager.instance.flagsRemaining > 0 && !isCheck()){
-
-                DrawFlag();
-                GameManager.instance.FlagPlaced(isBomb());
-            }
-            else if (flaged){
-
-                EraseFlag();
-                GameManager.instance.FlagRemoved(isBomb());
-            }
-        }
+    private Color GetColorForNumber(int n) {
+        
+        return n switch {
+            1 => Color.blue,
+            2 => Color.magenta,
+            3 => Color.red,
+            4 => Color.yellow,
+            5 => Color.green,
+            6 => Color.cyan,
+            7 => Color.gray,
+            8 => Color.black,
+            _ => Color.white
+        };
     }
-    public void DrawFlag() {
 
-        transform.GetChild(0).GetChild(2).gameObject.SetActive(true);
-        flaged = true;
-    }
-    public void EraseFlag() {
-
-        transform.GetChild(0).GetChild(2).gameObject.SetActive(false);
-        flaged = false;
-    }
 }

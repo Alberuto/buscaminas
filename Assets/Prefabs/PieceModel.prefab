@@ -245,7 +245,6 @@ MonoBehaviour:
   y: 0
   bomb: 0
   check: 0
-  flaged: 0
 --- !u!61 &-503859895431008020
 BoxCollider2D:
   m_ObjectHideFlags: 0

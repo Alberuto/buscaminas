@@ -143,7 +143,8 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
         Debug.Log(new System.NotImplementedException());
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) {
-        Debug.Log(new System.NotImplementedException());
+        Debug.Log($"Shutdown: {shutdownReason}");
+        SceneManager.LoadScene(lobbyScene.name);
     }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) {
         Debug.Log(new System.NotImplementedException());
