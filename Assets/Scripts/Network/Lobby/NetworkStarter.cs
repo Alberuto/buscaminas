@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using Fusion;
 using System.Collections.Generic;
 using UnityEditor;
@@ -37,7 +37,7 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
 
         SceneManager.LoadScene(lobbyScene.name);
     }
-    public void CreateRandomSession() {     //M�todo para salas random
+    public void CreateRandomSession() {     //Método para salas random
 
         int randomInt = Random.Range(1000, 9999);
         string randomSessionName = "Session creada en la room" + randomInt.ToString();
@@ -165,7 +165,7 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
         Debug.Log(new System.NotImplementedException());
     }
     public void OnInput(NetworkRunner runner, NetworkInput input) {
-        Debug.Log(new System.NotImplementedException());
+     //   Debug.Log(new System.NotImplementedException());
     }
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) {
         Debug.Log(new System.NotImplementedException());
@@ -180,8 +180,10 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
         Debug.Log(new System.NotImplementedException());
     }
     public void OnSceneLoadDone(NetworkRunner runner) {
-        runner.Spawn(BuscaminasPrefab);
-        Debug.Log(new System.NotImplementedException());
+       // runner.Spawn(BuscaminasPrefab); explota explota me explota
+       // Debug.Log(new System.NotImplementedException());
+        Debug.Log("✅ Escena Game cargada correctamente");
+
     }
     public void OnSceneLoadStart(NetworkRunner runner) {
         Debug.Log(new System.NotImplementedException());

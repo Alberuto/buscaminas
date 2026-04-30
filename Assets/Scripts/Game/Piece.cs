@@ -37,8 +37,9 @@ public class Piece : MonoBehaviour {
     }
     private void OnMouseDown() {
 
-        if (netGame != null)
-            netGame.TryTurn(x, y);
+        if (netGame == null || !netGame.Object.HasInputAuthority) 
+            return;
+        netGame.TryTurn(x, y);
     }
     public void DrawBomb() {
 

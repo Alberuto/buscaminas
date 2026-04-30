@@ -1,10 +1,7 @@
-using Fusion;
-using System;
+Ôªøusing Fusion;
 using System.Linq;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class NetworkGameManager : NetworkBehaviour {
 
@@ -14,12 +11,16 @@ public class NetworkGameManager : NetworkBehaviour {
     [SerializeField] 
         public GameObject endMenu;
 
-    public static NetworkGameManager instance;
-
     [Networked, Capacity(100*100)]
-    public NetworkArray<int> Board => default;
+        public NetworkArray<int> Board => default;  
 
-    public int BoardCapacity => Generator.gen.width * Generator.gen.height;
+    [Networked] 
+        public int Width { get; set; }
+    [Networked] 
+        public int Height { get; set; }
+
+    public static NetworkGameManager instance;
+    public int BoardCapacity => Width * Height;
 
     [Networked]
         public PlayerRef ThisTurn {
@@ -33,66 +34,60 @@ public class NetworkGameManager : NetworkBehaviour {
 
     private void Awake() {
 
-        if (instance == null) {
-
-            DontDestroyOnLoad(gameObject);
+        if (instance == null)
             instance = this;
-        }
-        else if (instance != this) {
-
+        else 
             Destroy(gameObject);
-        }
     }
-    public void Start() {
-
-        DontDestroyOnLoad(gameObject);
-        startMenu.SetActive(true);
-        endMenu.SetActive(false);
+    public override void Spawned() {
         endGame = false;
+        if (Runner.IsServer) {
+            ThisTurn = Runner.ActivePlayers.First();
+            startMenu.SetActive(true);
+            endMenu.SetActive(false);
+        }
+        base.Spawned();
     }
     public void GameStart() {
 
-        Generator.gen.setWidth(int.Parse(StartMenu.instance.width.GetComponentInChildren<TMP_InputField>().text.ToString()));
-        Generator.gen.setHeight(int.Parse(StartMenu.instance.height.GetComponentInChildren<TMP_InputField>().text.ToString()));
-        Generator.gen.setBombs(int.Parse(StartMenu.instance.bombs.GetComponentInChildren<TMP_InputField>().text.ToString()));
+        if (!Runner.IsServer) return;
+
+        int w = int.Parse(StartMenu.instance.width.text);
+        int h = int.Parse(StartMenu.instance.height.text);
+        int b = int.Parse(StartMenu.instance.bombs.text);
+
+        Generator.gen.setWidth(w);
+        Generator.gen.setHeight(h);
+        Generator.gen.setBombs(b);
 
         if (Generator.gen.Validate() == 0) {
             Generator.gen.Generate();
+            Width = w; Height = h;  // ‚Üê AGREGAR
             startMenu.SetActive(false);
-        }
-        else {
-            Debug.Log("Error en los par·metros del juego.");
-            //creamos un canvas con el mensaje de error
         }
     }
     public void ReiniciarJuego() {
 
-        if (Generator.gen.map != null) {
-            Generator.gen.DestroyMap();
-        }
-        Start();
-        // Recarga la escena actual al estado inicial
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (Runner.IsServer) Runner.Shutdown();
     }
     public bool CheckVictory() {
 
         int safePieces = 0;
-        for (int i = 0; i < Generator.gen.width; i++) {
-            for (int j = 0; j < Generator.gen.height; j++) {
+        for (int i = 0; i < Width; i++) {
+            for (int j = 0; j < Height; j++) {
                 Piece p = Generator.gen.map[i][j].GetComponent<Piece>();
                 if (!p.isBomb() && p.isCheck()) {
                     safePieces++;
                 }
             }
         }
-        int totalSafe = Generator.gen.width * Generator.gen.height - Generator.gen.bombsNumber;
+        int totalSafe = Width * Height - Generator.gen.bombsNumber;
 
         return safePieces == totalSafe;
     }
     public void TryTurn(int x, int y) {
 
-        if (Runner.IsServer) return;
-        if (endGame) return;
+        if (endGame || ThisTurn != Runner.LocalPlayer) return;
         Debug.Log($"Player {Runner.LocalPlayer} is trying to play at index bidimensional ( {x} ,{y} )");
         RPC_Play(x,y);
     }
@@ -101,11 +96,11 @@ public class NetworkGameManager : NetworkBehaviour {
     private void RPC_Play(int x, int y, RpcInfo info = default) {
 
         if (endGame) return;
-        if (x < 0 || x >= Generator.gen.width || y < 0 || y >= Generator.gen.height) return; //validar rango
+        if (x < 0 || x >= Width || y < 0 || y >= Height) return; //validar rango
 
-        int index = y * Generator.gen.width + x;
+        int index = y * Width + x;
 
-        // Si ya est· marcada, no permitir
+        // Si ya est√° marcada, no permitir
         if (Board.Get(index) != 0) return;
 
         PlayerRef playerCaller = info.Source;
@@ -114,7 +109,7 @@ public class NetworkGameManager : NetworkBehaviour {
         int player = (ThisTurn == Runner.ActivePlayers.ToList()[0]) ? 1 : 2;
         Board.Set(index, player);
 
-        // AquÌ se revela la casilla en todos los clientes
+        // Aqu√≠ se revela la casilla en todos los clientes
         Generator.gen.RevealPiece(x, y, playerCaller == Runner.LocalPlayer);
 
         Piece piece = Generator.gen.map[x][y].GetComponent<Piece>();
@@ -122,21 +117,11 @@ public class NetworkGameManager : NetworkBehaviour {
         if (piece.isBomb()) {
             // Derrota: el que pisa bomba pierde
             endGame = true;
-            endMenu.SetActive(true);
-            Transform victoria = endMenu.transform.Find("Victoria");
-            Transform derrota = endMenu.transform.Find("Derrota");
-            victoria.gameObject.SetActive(false);
-            derrota.gameObject.SetActive(true);
             Generator.gen.RevealAllBombs(); // opcional, las demuestra todas
         }
         else {
             if (CheckVictory()) {
                 endGame = true;
-                endMenu.SetActive(true);
-                Transform victoria = endMenu.transform.Find("Victoria");
-                Transform derrota = endMenu.transform.Find("Derrota");
-                victoria.gameObject.SetActive(true);
-                derrota.gameObject.SetActive(false);
             }
             else {
                 ChangeTurn();
@@ -152,5 +137,13 @@ public class NetworkGameManager : NetworkBehaviour {
                 break;
             }
         }
+    }
+    public override void FixedUpdateNetwork() {
+
+        if (!Runner.IsServer || !endGame) return;
+        endMenu.SetActive(true);
+        // Victoria/derrota por defecto derrota
+        endMenu.transform.Find("Derrota").gameObject.SetActive(true);
+        endMenu.transform.Find("Victoria").gameObject.SetActive(false);
     }
 }
