@@ -40,6 +40,9 @@ public class NetworkGameManager : NetworkBehaviour {
             Destroy(gameObject);
     }
     public override void Spawned() {
+
+        Debug.Log("🔥 NetworkGameManager SPAWNED");
+
         endGame = false;
         if (Runner.IsServer) {
             ThisTurn = Runner.ActivePlayers.First();
@@ -50,9 +53,14 @@ public class NetworkGameManager : NetworkBehaviour {
     }
     public void GameStart() {
 
-        if (!Runner.IsServer) return;
+        Debug.Log("🔥 GameStart() LLAMADO");
 
-        Debug.Log("🔥 SERVER ejecutando GameStart");
+      /*  if (!Runner.IsServer) {
+            Debug.Log("❌ NO SERVER - return");
+            return;
+        }*/
+
+        Debug.Log("🔥 SERVER ejecutando Generador");
 
         int w = int.Parse(StartMenu.instance.width.text);
         int h = int.Parse(StartMenu.instance.height.text);
@@ -62,11 +70,16 @@ public class NetworkGameManager : NetworkBehaviour {
         Generator.gen.setHeight(h);
         Generator.gen.setBombs(b);
 
+        Debug.Log($"📏 w={w} h={h} b={b}");
+
         if (Generator.gen.Validate() == 0) {
+            Debug.Log("✅ Validate OK - Generate()");
             Generator.gen.Generate();
             Width = w; Height = h;  // ← AGREGAR
             startMenu.SetActive(false);
+            Debug.Log("✅ Tablero generado!");
         }
+        startMenu.SetActive(false);
     }
     public void ReiniciarJuego() {
 
@@ -75,6 +88,7 @@ public class NetworkGameManager : NetworkBehaviour {
     public bool CheckVictory() {
 
         int safePieces = 0;
+
         for (int i = 0; i < Width; i++) {
             for (int j = 0; j < Height; j++) {
                 Piece p = Generator.gen.map[i][j].GetComponent<Piece>();

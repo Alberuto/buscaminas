@@ -1680,7 +1680,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2022454190}
+      - m_Target: {fileID: 1085636407}
         m_TargetAssemblyTypeName: NetworkGameManager, Assembly-CSharp
         m_MethodName: GameStart
         m_Mode: 1
@@ -2042,7 +2042,7 @@ MonoBehaviour:
   width: 8
   height: 8
   bombsNumber: 8
-  game: {fileID: 2014894890359667545, guid: daf082a8640866044a864f7b225769d9, type: 3}
+  game: {fileID: 0}
 --- !u!1 &802575035
 GameObject:
   m_ObjectHideFlags: 0
@@ -2438,6 +2438,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
   m_Padding: {x: -8, y: -5, z: -8, w: -5}
   m_Softness: {x: 0, y: 0}
+--- !u!1 &1085636405
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1085636406}
+  - component: {fileID: 1085636407}
+  m_Layer: 0
+  m_Name: NetworkGameManageras
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1085636406
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085636405}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1682610989}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1085636407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1085636405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a53f3e0f7b95ec46825dfc89cc27d7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NetworkGameManager
+  startMenu: {fileID: 1360874913}
+  endMenu: {fileID: 1307568508}
+  _Board: 
+  _Width: 0
+  _Height: 0
+  _endGame: 0
 --- !u!1 &1105844729
 GameObject:
   m_ObjectHideFlags: 0
@@ -2760,7 +2810,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4ad225d0b3d9f94ab5b818e2792514e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkUI
-  game: {fileID: 2022454190}
+  game: {fileID: 0}
   runner: {fileID: 3181722255650251469, guid: c03becd0a5dc6e44e8afa9b5035a181a, type: 3}
   turnText: {fileID: 1693215055}
   endGameText: {fileID: 314390580}
@@ -3138,7 +3188,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 786518943}
-  - {fileID: 2022454189}
+  - {fileID: 1085636406}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1693215053
@@ -4020,76 +4070,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1845525744}
   m_CullTransparentMesh: 1
---- !u!1 &2022454188
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2022454189}
-  - component: {fileID: 2022454191}
-  - component: {fileID: 2022454190}
-  m_Layer: 0
-  m_Name: NetworkGameManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2022454189
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2022454188}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1682610989}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2022454190
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2022454188}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a53f3e0f7b95ec46825dfc89cc27d7f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::NetworkGameManager
-  startMenu: {fileID: 1360874913}
-  endMenu: {fileID: 1307568508}
-  _Board: 
-  _Width: 0
-  _Height: 0
-  _endGame: 0
---- !u!114 &2022454191
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2022454188}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
-  SortKey: 1395643032
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 2022454190}
-  ForceRemoteRenderTimeframe: 0
 --- !u!1 &2034610967
 GameObject:
   m_ObjectHideFlags: 0

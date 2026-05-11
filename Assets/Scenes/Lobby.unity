@@ -284,7 +284,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000466495}
+  m_AnchoredPosition: {x: 0, y: 0.00006530081}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &163231458
@@ -430,7 +430,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NetworkStarter
   runnerPrefab: {fileID: 3181722255650251469, guid: c03becd0a5dc6e44e8afa9b5035a181a, type: 3}
-  BuscaminasPrefab: {fileID: 8271934395529560107, guid: daf082a8640866044a864f7b225769d9, type: 3}
+  BuscaminasPrefab: {fileID: 0}
   lobbyName: default
   sessionListContentParent: {fileID: 133076361}
   sessionListEntryPrefab: {fileID: 7581156896770326980, guid: 4f343766a1c5ef5409ef6248f503f1f1, type: 3}
@@ -1210,7 +1210,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 969082781}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.999998
+  m_Size: 0.9999912
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
