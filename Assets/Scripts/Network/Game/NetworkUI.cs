@@ -12,14 +12,19 @@ public class NetworkUI : MonoBehaviour {
     public TextMeshProUGUI endGameText;
 
     void Start() {
-
-        InvokeRepeating(nameof(FindGame), 0.5f, 0.5f);
+        if (game == null) game = FindObjectOfType<NetworkGameManager>();
+        if (runner == null) runner = FindObjectOfType<NetworkRunner>();
+        gameObject.SetActive(false);  // Desactivado hasta listo
     }
     void Update() {
 
-        if (game == null) return;
+        if (game == null || runner == null || game.Object == null) return;
 
-        if (runner == null) runner = FindObjectOfType<NetworkRunner>();
+        // Solo activa cuando ya está spawneado
+        if (!gameObject.activeSelf) {
+            gameObject.SetActive(true);
+            return;
+        }
 
         if (game.endGame) {
             turnText.text = "Fin de partida";
@@ -31,9 +36,7 @@ public class NetworkUI : MonoBehaviour {
             turnText.text = $"Turno: {turnStr}";
         }
     }
-    void FindGame() {
-
-        if (game == null) game = FindObjectOfType<NetworkGameManager>();
-        if (runner == null) runner = FindObjectOfType<NetworkRunner>();
+    void OnDestroy() {
+        gameObject.SetActive(false);
     }
 }

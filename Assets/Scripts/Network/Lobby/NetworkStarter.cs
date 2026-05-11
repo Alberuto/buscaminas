@@ -137,7 +137,7 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
              NetworkObject playerObject = runner.Spawn(playerPrefab, Vector3.zero);
              runner.SetPlayerObject(player, playerObject);
         */
-        Debug.Log(new System.NotImplementedException());
+        Debug.Log($"✅ Jugador {player} se unió");
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {
         Debug.Log(new System.NotImplementedException());
@@ -171,7 +171,7 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
         Debug.Log(new System.NotImplementedException());
     }
     public void OnConnectedToServer(NetworkRunner runner) {
-        Debug.Log(new System.NotImplementedException());
+        Debug.Log("✅ Conectado al servidor");
     }
     public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) {
         Debug.Log(new System.NotImplementedException());
@@ -186,7 +186,7 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
 
     }
     public void OnSceneLoadStart(NetworkRunner runner) {
-        Debug.Log(new System.NotImplementedException());
+        Debug.Log("✅ Cargando escena Game");
     }
 }
 

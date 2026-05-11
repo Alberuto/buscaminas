@@ -52,6 +52,8 @@ public class NetworkGameManager : NetworkBehaviour {
 
         if (!Runner.IsServer) return;
 
+        Debug.Log("🔥 SERVER ejecutando GameStart");
+
         int w = int.Parse(StartMenu.instance.width.text);
         int h = int.Parse(StartMenu.instance.height.text);
         int b = int.Parse(StartMenu.instance.bombs.text);
