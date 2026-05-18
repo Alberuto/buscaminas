@@ -130,4 +130,16 @@ public class NetworkGameManager : NetworkBehaviour {
             }
         }
     }
+    public void ReturnToStartMenu() {
+        if (!Runner.IsSharedModeMasterClient) return;
+
+        Generator.gen.DestroyMap();
+        endGame = false;
+        endMenuVictory.SetActive(false);
+        endMenuLose.SetActive(false);
+        startMenu.SetActive(true);
+
+        if (Runner.ActivePlayers.Any())
+            ThisTurn = Runner.ActivePlayers.First();
+    }
 }

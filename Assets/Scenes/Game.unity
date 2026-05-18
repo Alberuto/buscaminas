@@ -1187,9 +1187,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: ReiniciarJuego
+      - m_Target: {fileID: 1085636407}
+        m_TargetAssemblyTypeName: NetworkGameManager, Assembly-CSharp
+        m_MethodName: ReturnToStartMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1924,9 +1924,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: ReiniciarJuego
+      - m_Target: {fileID: 1085636407}
+        m_TargetAssemblyTypeName: NetworkGameManager, Assembly-CSharp
+        m_MethodName: ReturnToStartMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

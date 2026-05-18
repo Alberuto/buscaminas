@@ -39,4 +39,5 @@ public class NetworkUI : MonoBehaviour {
     void OnDestroy() {
         gameObject.SetActive(false);
     }
+
 }
