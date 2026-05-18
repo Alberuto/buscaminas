@@ -11,60 +11,37 @@ public class Piece : MonoBehaviour {
     private void Awake() {
         netGame = FindObjectOfType<NetworkGameManager>();
     }
-    public void setX(int x) { 
-        this.x = x;
-    }
-    public void setY(int y) {
-        this.y = y;
-    }
-    public void setBomb(bool bomb) {
-        this.bomb = bomb;
-    }
-    public bool isBomb() {
-        return bomb;
-    }
-    public int getX() {
-        return x;
-    }
-    public int getY() { 
-        return y;
-    }
-    public void setCheck(bool v) {
-        this.check = v;
-    }
-    public bool isCheck() {
-        return check;
-    }
+    public void setX(int x) => this.x = x;
+    public void setY(int y) => this.y = y;
+    public void setBomb(bool bomb) => this.bomb = bomb;
+    public bool isBomb() => bomb;
+    public int getX() => x;
+    public int getY() => y;
+    public void setCheck(bool v) => check = v;
+    public bool isCheck() => check;
     private void OnMouseDown() {
 
-        if (netGame == null || !netGame.Object.HasInputAuthority) 
-            return;
+        if (netGame == null) return;
         netGame.TryTurn(x, y);
     }
     public void DrawBomb() {
 
         if (isCheck()) return;
-
         setCheck(true);
 
         if (isBomb()) {
-
             GetComponent<SpriteRenderer>().material.color = Color.red;
             transform.GetChild(0).GetChild(1).gameObject.SetActive(true);
-            // NO ponemos GameManager.instance.endGame aquí
-            // ni activamos menús; lo hace RPC_Play
         }
         else {
-
             int bombsNumer = Generator.gen.GetBombsAround(x, y);
             var textComponent = transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>();
-
             if (bombsNumer != 0) {
                 textComponent.text = bombsNumer.ToString();
                 textComponent.color = GetColorForNumber(bombsNumer);
             }
             else {
-                GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 0.5f); // Color.gray5
+                GetComponent<Renderer>().material.color = new Color(0.5f, 0.5f, 0.5f); // Color.gray
                 Generator.gen.CheckPieceAround(x, y);
             }
         }
@@ -83,5 +60,4 @@ public class Piece : MonoBehaviour {
             _ => Color.white
         };
     }
-
 }

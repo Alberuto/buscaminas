@@ -10,36 +10,22 @@ public class StartMenu : MonoBehaviour{
     [SerializeField] public TMP_InputField height;
     [SerializeField] public TMP_InputField bombs;
 
-    private int flags;
-
     public static StartMenu instance;
 
-    public void Start(){
-
+    public void Awake(){
         instance = this;
+    }
+    public void OnClickStart() {
 
-        int bombCount;
+        if (NetworkGameManager.instance == null) 
+            return;
+        if (!int.TryParse(width.text, out int w)) 
+            return;
+        if (!int.TryParse(height.text, out int h)) 
+            return;
+        if (!int.TryParse(bombs.text, out int b)) 
+            return;
 
-        if (int.TryParse(bombs.text, out bombCount)){
-
-            flags = bombCount;
-        }
+        NetworkGameManager.instance.GameStart(w, h, b);
     }
 }
-
-/* 
- * 
-Falta por hacer: 
-
-(X) 1.- Mostar el mensaje de victoria una vez detectadas (flageadas) todas las bombas
-(X) 2.- Que el boton de Empezar sirva para volver a poder jugar (podria preguntarse si con el mismo tablero o modificar)
-(X) 3.- Que no escriba banderas en casillas abiertas o con numeros
-(X) 4.- Que no escriba/borre banderas una vez has perdido/ganado la partida
-
-5.- Control de errores: 
-
-a) poner mas bombas que casillas
-b) hacer un panel mas grande que la pantalla
-c) Resumen: Slider de FCO.
-d) No obstante hay un codigo de error por consola y no deja iniciar la partida.
-*/

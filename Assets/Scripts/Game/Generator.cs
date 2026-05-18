@@ -1,55 +1,35 @@
 using UnityEngine;
 
-public class Generator : MonoBehaviour{
+public class Generator : MonoBehaviour {
 
-    //declarar variables public <tipo> <nombre>
     [SerializeField] private GameObject Piece;
     [SerializeField] public int width, height, bombsNumber;
     [SerializeField] public GameObject [][] map;
 
-    public NetworkGameManager game;
+    //public NetworkGameManager game;
     public static Generator gen;
 
     private void Awake(){
-
         gen = this;
     }
-    public void setWidth(int width) {
-        
-        this.width = width;
-    }
-    public void setHeight(int height){
-
-        this.height = height;
-    }
-    public void setBombs(int bombs){
-
-        this.bombsNumber = bombs;
-    }
+    public void setWidth(int width) => this.width = width;
+    public void setHeight(int height) => this.height = height;
+    public void setBombs(int bombs) => this.bombsNumber = bombs;
     public int Validate() {
 
         int errorCode = 0;
-
-        if(width <= 1)
-            errorCode += 4;
-        if (height <= 1)
-            errorCode += 2;
-        if (!(bombsNumber >=0 && bombsNumber < (width*height)))
-            errorCode += 1;
-
+        if(width <= 1) errorCode += 4;
+        if (height <= 1) errorCode += 2;
+        if (!(bombsNumber >=0 && bombsNumber < (width*height))) errorCode += 1;
         return errorCode;
     }
     public void Generate(){
 
-        gen = this;
-
         map = new GameObject[width][];
 
-        for (int i = 0; i < map.Length; i++){
-        
+        for (int i = 0; i < width; i++){
             map[i] = new GameObject[height];
         }
-
         for (int j = 0; j < height; j++){
             for (int i = 0; i < width; i++){
 
@@ -59,7 +39,7 @@ public class Generator : MonoBehaviour{
             }
         }
         //ubicar camara centrada sobre el mapa independientemente de la dimesion
-        Camera.main.transform.position = new Vector3((float)width / 2 -0.5f, (float)height / 2 -0.5f, -10);
+        Camera.main.transform.position = new Vector3((float)width / 2 - 0.5f, (float)height / 2 -0.5f, -10);
         //rellenar bombas
         for (int i = 0; i < bombsNumber; i++){
 
@@ -104,7 +84,6 @@ public class Generator : MonoBehaviour{
 
         return cont;
     }
-
     public void CheckPieceAround(int x, int y) {
 
         //no estoy en una esquina Y arriba izquierda
@@ -132,7 +111,6 @@ public class Generator : MonoBehaviour{
         if (x < width - 1 && y > 0) 
             map[x + 1][y - 1].GetComponent<Piece>().DrawBomb();
     }
-
     public void DestroyMap() {
 
         if (map != null) {

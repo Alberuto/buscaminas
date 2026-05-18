@@ -4,47 +4,39 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine.SceneManagement;
 using Fusion.Sockets;
+using Unity.Mathematics;
 
 public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
 
     public NetworkRunner runnerPrefab;
     public static NetworkRunner runnerInstance; 
-    public NetworkObject BuscaminasPrefab;
+   // public NetworkObject playerPrefab;
 
     [SerializeField] private string lobbyName = "default";
-
     [SerializeField] private Transform sessionListContentParent;
     [SerializeField] private GameObject sessionListEntryPrefab;
-    [SerializeField] private Dictionary<string, GameObject> sessionListUiDictionary = new Dictionary<string, GameObject>();
-
-    [SerializeField] private SceneAsset gameScene;
-    [SerializeField] private SceneAsset lobbyScene;
+    [SerializeField] private string gameScene;
+    [SerializeField] private string lobbyScene;
+    [SerializeField] private Dictionary<string, GameObject> sessionListUiDictionary = new();
 
     private void Start() {
-
-        DontDestroyOnLoad(this);
+        DontDestroyOnLoad(gameObject);
         runnerInstance = Instantiate(runnerPrefab);
         runnerInstance.AddCallbacks(this);
-        //conexion con el server
         runnerInstance.JoinSessionLobby(SessionLobby.Shared, lobbyName);
     }
     public static void ReturnToLobby() {
-        //despawn del player simil a logout, te manda al lobby
-        //runnerInstance.Despawn(runnerInstance.GetPlayerObject(runnerInstance.LocalPlayer));
         runnerInstance.Shutdown(true, ShutdownReason.Ok);
     }
-    public void OnShutDown(NetworkRunner runner, ShutdownReason reason) {
-
-        SceneManager.LoadScene(lobbyScene.name);
-    }
+   
     public void CreateRandomSession() {     //Método para salas random
 
-        int randomInt = Random.Range(1000, 9999);
+        int randomInt = UnityEngine.Random.Range(1000, 9999);
         string randomSessionName = "Session creada en la room" + randomInt.ToString();
 
         runnerInstance.StartGame(new StartGameArgs() {
 
-            Scene = SceneRef.FromIndex(GetSceneIndex(gameScene.name)),
+            Scene = SceneRef.FromIndex(GetSceneIndex(gameScene)),
             SessionName = randomSessionName,
             GameMode = GameMode.Shared,
             PlayerCount = 2,
@@ -54,70 +46,39 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
     private int GetSceneIndex(string sceneName) {
 
         for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)  {
-
             string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
             string name = System.IO.Path.GetFileNameWithoutExtension(scenePath);
-
-            if (sceneName == name) {
-                return i;
-            }
+            if (sceneName == name) return i;
         }
         return -1;
     }
     public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) {
-        //eliminar lista de sesssiones
-        DeleteOldSessionFromUI(sessionList);
-        //volvermos a generalo
-        CompareLists(sessionList);
-    }
-    private void CompareLists(List<SessionInfo> sessionList) {
 
-        foreach (SessionInfo session in sessionList) {
-
-            if (!sessionListUiDictionary.ContainsKey(session.Name)) { 
-                //tenemos la sesion en el array asociativo (diccionario) claves par/valor
-                UpdateEntryUI(session);
-            }
-            else {
-                CreateEntryUI(session);
-            }
-        }
-    }
-    private void CreateEntryUI(SessionInfo session) {
-
-        GameObject newEntry = Instantiate(sessionListEntryPrefab);
-        newEntry.transform.parent = sessionListContentParent;
-        SessionListEntry entryScript = newEntry.GetComponent<SessionListEntry>();
-        sessionListUiDictionary.Add(session.Name, newEntry);
-
-        entryScript.roomName.text = session.Name;
-        entryScript.playerCount.text = session.PlayerCount.ToString() + "/" + session.MaxPlayers;
-        entryScript.joinButton.interactable = session.IsOpen;
-        newEntry.SetActive(session.IsVisible);
-    }
-    private void UpdateEntryUI(SessionInfo session) {
-        sessionListUiDictionary.TryGetValue(session.Name, out GameObject newEntry);
-        SessionListEntry entryScript = newEntry.GetComponent<SessionListEntry>();
-
-        entryScript.roomName.text = session.Name;
-        entryScript.playerCount.text = session.PlayerCount.ToString() + "/" + session.MaxPlayers;
-        entryScript.joinButton.interactable = session.IsOpen;
-        newEntry.SetActive(session.IsVisible);
-    }
-    private void DeleteOldSessionFromUI(List<SessionInfo> sessionList) {
-
-        bool isContained = false;
-        foreach (KeyValuePair<string, GameObject> entry in sessionListUiDictionary) {
-            foreach (SessionInfo session in sessionList) {
-                if (entry.Key == session.Name) {
-                    isContained = true;
+        foreach (var old in new List<string>(sessionListUiDictionary.Keys)) {
+            bool exists = false;
+            foreach (var session in sessionList) {
+                if (session.Name == old) {
+                    exists = true;
                     break;
                 }
             }
-            if (!isContained) {
-                Destroy(entry.Value);
-                sessionListUiDictionary.Remove(entry.Key);
+            if (!exists) {
+                Destroy(sessionListUiDictionary[old]);
+                sessionListUiDictionary.Remove(old);
             }
+        }
+        foreach (SessionInfo session in sessionList) {
+
+            if (!sessionListUiDictionary.TryGetValue(session.Name, out GameObject entry)) {
+                GameObject newEntry = Instantiate(sessionListEntryPrefab, sessionListContentParent);
+                sessionListUiDictionary[session.Name] = newEntry;
+                entry = newEntry;
+            }
+            SessionListEntry entryScript = entry.GetComponent<SessionListEntry>();
+            entryScript.roomName.text = session.Name;
+            entryScript.playerCount.text = session.PlayerCount + "/" + session.MaxPlayers;
+            entryScript.joinButton.interactable = session.IsOpen;
+            entry.SetActive(session.IsVisible);
         }
     }
     //interfaz
@@ -128,23 +89,14 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
         Debug.Log(new System.NotImplementedException());
     }
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) {
-
-        /* Todos jugamos sobre el mismo tablero, comentado por si acaso para otros proyectos, 
-         * pero para el tictactoe no es necesario el spawn de un objeto por jugador, 
-         * ya que el tablero es compartido y cada jugador solo tiene que enviar su input 
-         * para colocar su ficha en el tablero, no necesitan un objeto propio en la escena
-         * if(player==runner.LocalPlayer)
-             NetworkObject playerObject = runner.Spawn(playerPrefab, Vector3.zero);
-             runner.SetPlayerObject(player, playerObject);
-        */
-        Debug.Log($"✅ Jugador {player} se unió");
+        Debug.Log(new System.NotImplementedException());
     }
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {
         Debug.Log(new System.NotImplementedException());
     }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) {
         Debug.Log($"Shutdown: {shutdownReason}");
-        SceneManager.LoadScene(lobbyScene.name);
+        SceneManager.LoadScene(lobbyScene);
     }
     public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) {
         Debug.Log(new System.NotImplementedException());
@@ -180,36 +132,9 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
         Debug.Log(new System.NotImplementedException());
     }
     public void OnSceneLoadDone(NetworkRunner runner) {
-       // runner.Spawn(BuscaminasPrefab); explota explota me explota
-       // Debug.Log(new System.NotImplementedException());
         Debug.Log("✅ Escena Game cargada correctamente");
-
     }
     public void OnSceneLoadStart(NetworkRunner runner) {
         Debug.Log("✅ Cargando escena Game");
     }
 }
-
-/*
- * MODO SIN LOBBY, SOLO PARA TESTEAR LA CONEXION Y EL SPAWN DE OBJETOS EN LA ESCENA DE JUEGO
- * 
- * 
- * private async void start(){
- *      var runnerInstance = Instantiate(runnerPrefab);
-        runnerInstance.ProvideInput = false;
-
-        await runnerInstance.StartGame(new StartGameArgs() {
-
-            GameMode = GameMode.Shared,
-            SessionName = "Test",
-            SceneManager = runnerInstance.GetComponent<NetworkSceneManagerDefault>()
-
-        });
-
-        if (runnerInstance.IsSharedModeMasterClient) { 
-
-            Debug.Log("Spawning game TTT from host player 1");
-            runnerInstance.Spawn(tictactoePrefab);
-        }
-   }
- */
