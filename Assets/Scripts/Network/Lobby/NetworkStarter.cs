@@ -37,7 +37,7 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
         runnerInstance.StartGame(new StartGameArgs() {
 
             Scene = SceneRef.FromIndex(GetSceneIndex(gameScene)),
-            SessionName = randomSessionName,
+            SessionName = "test", //sustituir en el futuro por randomSessionName para depuracion
             GameMode = GameMode.Shared,
             PlayerCount = 2,
             IsVisible = true, //false para que no aparezca en la lista de salas y que cree sala "privada"
@@ -82,18 +82,10 @@ public class NetworkStarter : MonoBehaviour, INetworkRunnerCallbacks {
         }
     }
     //interfaz
-    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) {
-        Debug.Log(new System.NotImplementedException());
-    }
-    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) {
-        Debug.Log(new System.NotImplementedException());
-    }
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) {
-        Debug.Log(new System.NotImplementedException());
-    }
-    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {
-        Debug.Log(new System.NotImplementedException());
-    }
+    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) {    }
+    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) {    }
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) {    }
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) {    }
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) {
         Debug.Log($"Shutdown: {shutdownReason}");
         SceneManager.LoadScene(lobbyScene);

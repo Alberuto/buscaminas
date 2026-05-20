@@ -19,13 +19,11 @@ public class NetworkUI : MonoBehaviour {
     void Update() {
 
         if (game == null || runner == null || game.Object == null) return;
-
-        // Solo activa cuando ya está spawneado
+        /* Solo activa cuando ya está spawneado
         if (!gameObject.activeSelf) {
             gameObject.SetActive(true);
             return;
-        }
-
+        }*/
         if (game.endGame) {
             turnText.text = "Fin de partida";
         }
@@ -39,5 +37,4 @@ public class NetworkUI : MonoBehaviour {
     void OnDestroy() {
         gameObject.SetActive(false);
     }
-
 }

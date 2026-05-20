@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviour{
 
         if (Generator.gen.Validate() == 0) {
 
-            Generator.gen.Generate();
+            Generator.gen.Generate(1);
             startMenu.SetActive(false);
         }
         else {

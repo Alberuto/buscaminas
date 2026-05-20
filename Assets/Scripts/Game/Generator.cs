@@ -23,7 +23,9 @@ public class Generator : MonoBehaviour {
         if (!(bombsNumber >=0 && bombsNumber < (width*height))) errorCode += 1;
         return errorCode;
     }
-    public void Generate(){
+    public void Generate(int seed) {
+
+        Random.InitState(seed);
 
         map = new GameObject[width][];
 

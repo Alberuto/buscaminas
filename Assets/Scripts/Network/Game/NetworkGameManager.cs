@@ -23,13 +23,16 @@ public class NetworkGameManager : NetworkBehaviour {
     public override void Spawned() {
 
         Debug.Log("🔥 NetworkGameManager SPAWNED");
+        endMenuVictory.SetActive(false);
+        endMenuLose.SetActive(false);
 
         if (Runner.IsSharedModeMasterClient) {
             ThisTurn = Runner.ActivePlayers.First();
             endGame = false;
             startMenu.SetActive(true);
-            endMenuVictory.SetActive(false);
-            endMenuLose.SetActive(false);
+        }
+        else {
+            startMenu.SetActive(false);
         }
     }
     public void GameStart(int w, int h, int b) {
@@ -43,22 +46,39 @@ public class NetworkGameManager : NetworkBehaviour {
             Debug.LogError("❌ Generator.gen es null");
             return;
         }
-
-        Debug.Log("🔥 MASTER CLIENT ejecutando Generador");
         Generator.gen.setWidth(w);
         Generator.gen.setHeight(h);
         Generator.gen.setBombs(b);
-        Debug.Log($"📏 w={w} h={h} b={b}");
-
+        //Generator.gen.Generate();
         if (Generator.gen.Validate() != 0) {
             Debug.LogWarning("❌ Datos de tablero inválidos");
             return;
         }
-        Generator.gen.Generate();
+        int seed = Random.Range(int.MinValue, int.MaxValue);
+        RPC_StartGame(w, h, b, seed);
+        Debug.Log($"📏 w={w} h={h} b={b}");
+        Debug.Log("🔥 MASTER CLIENT ejecutando Generador");
         endGame = false;
         endMenuVictory.SetActive(false);
         endMenuLose.SetActive(false);
         startMenu.SetActive(false);
+    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_StartGame(int w, int h, int b, int seed) {
+        
+        if (Generator.gen == null) return;
+
+        Generator.gen.setWidth(w);
+        Generator.gen.setHeight(h);
+        Generator.gen.setBombs(b);
+        Generator.gen.Generate(seed);
+
+        endGame = false;
+        endMenuVictory.SetActive(false);
+        endMenuLose.SetActive(false);
+        startMenu.SetActive(false);
+        if (Runner.IsSharedModeMasterClient && Runner.ActivePlayers.Any())
+            ThisTurn = Runner.ActivePlayers.First();
     }
     public void ReiniciarJuego() {
         if (Runner.IsServer) Runner.Shutdown();
@@ -92,33 +112,44 @@ public class NetworkGameManager : NetworkBehaviour {
         if (x < 0 || x >= Generator.gen.width || y < 0 || y >= Generator.gen.height) return; //validar rango
 
         int index = y * Generator.gen.width + x;
+        if (info.Source != ThisTurn) return;
 
         // Si ya está marcada, no permitir
         // if (Board.Get(index) != 0) return;
-        if (info.Source != ThisTurn) return;
         // int player = (ThisTurn == Runner.ActivePlayers.ToList()[0]) ? 1 : 2;
         //  Board.Set(index, player);
         // Aquí se revela la casilla en todos los clientes
 
-        Generator.gen.RevealPiece(x, y, info.Source == Runner.LocalPlayer);
-
+        Generator.gen.RevealPiece(x, y, true);
         Piece piece = Generator.gen.map[x][y].GetComponent<Piece>();
 
         if (piece.isBomb()) {
             // Derrota: el que pisa bomba pierde
             endGame = true;
             Generator.gen.RevealAllBombs(); // opcional, las demuestra todas
-            endMenuLose.SetActive(true);
+            // endMenuLose.SetActive(true);
+            RPC_ShowLose();
         }
         else {
             if (CheckVictory()) {
                 endGame = true;
-                endMenuVictory.SetActive(true);
+                //endMenuVictory.SetActive(true);
+                RPC_ShowVictory();
             }
             else {
                 ChangeTurn();
             }
         }
+    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_ShowVictory() {
+        endMenuVictory.SetActive(true);
+        endMenuLose.SetActive(false);
+    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_ShowLose() {
+        endMenuVictory.SetActive(false);
+        endMenuLose.SetActive(true);
     }
     private void ChangeTurn() {
 
@@ -132,14 +163,17 @@ public class NetworkGameManager : NetworkBehaviour {
     }
     public void ReturnToStartMenu() {
         if (!Runner.IsSharedModeMasterClient) return;
-
+        RPC_ReturnToStartMenu();
+    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_ReturnToStartMenu() {
         Generator.gen.DestroyMap();
         endGame = false;
         endMenuVictory.SetActive(false);
         endMenuLose.SetActive(false);
         startMenu.SetActive(true);
 
-        if (Runner.ActivePlayers.Any())
+        if (Runner.IsSharedModeMasterClient && Runner.ActivePlayers.Any())
             ThisTurn = Runner.ActivePlayers.First();
     }
 }

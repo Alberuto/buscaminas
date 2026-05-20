@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class PanelConexion : MonoBehaviour
-{
+public class PanelConexion : MonoBehaviour {
 
     [SerializeField] private float tiempo;
     void Start() {
