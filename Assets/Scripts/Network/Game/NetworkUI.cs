@@ -14,7 +14,6 @@ public class NetworkUI : MonoBehaviour {
     void Start() {
         if (game == null) game = FindObjectOfType<NetworkGameManager>();
         if (runner == null) runner = FindObjectOfType<NetworkRunner>();
-        gameObject.SetActive(false);  // Desactivado hasta listo
     }
     void Update() {
 
@@ -28,10 +27,7 @@ public class NetworkUI : MonoBehaviour {
             turnText.text = "Fin de partida";
         }
         else {
-            string turnStr = (game.ThisTurn == runner.LocalPlayer)
-                ? "Tú"
-                : "Oponente";
-            turnText.text = $"Turno: {turnStr}";
+            turnText.text = $"Turno:  {game.ThisTurn}";
         }
     }
     void OnDestroy() {
