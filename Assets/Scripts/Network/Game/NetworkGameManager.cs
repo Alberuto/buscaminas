@@ -81,7 +81,8 @@ public class NetworkGameManager : NetworkBehaviour {
             ThisTurn = Runner.ActivePlayers.First();
     }
     public void ReiniciarJuego() {
-        if (Runner.IsServer) Runner.Shutdown();
+        //if (Runner.IsServer) Runner.Shutdown();
+        if (Runner.IsSharedModeMasterClient) Runner.Shutdown();
     }
     public bool CheckVictory() {
 
@@ -111,16 +112,17 @@ public class NetworkGameManager : NetworkBehaviour {
         if (endGame) return;
         if (x < 0 || x >= Generator.gen.width || y < 0 || y >= Generator.gen.height) return; //validar rango
 
-        int index = y * Generator.gen.width + x;
         if (info.Source != ThisTurn) return;
-
+        
+        // int index = y * Generator.gen.width + x;
         // Si ya está marcada, no permitir
         // if (Board.Get(index) != 0) return;
         // int player = (ThisTurn == Runner.ActivePlayers.ToList()[0]) ? 1 : 2;
-        //  Board.Set(index, player);
+        // Board.Set(index, player);
         // Aquí se revela la casilla en todos los clientes
 
-        Generator.gen.RevealPiece(x, y, true);
+        RPC_RevealPiece(x, y);
+        //Generator.gen.RevealPiece(x, y, true);
         Piece piece = Generator.gen.map[x][y].GetComponent<Piece>();
 
         if (piece.isBomb()) {
@@ -140,6 +142,11 @@ public class NetworkGameManager : NetworkBehaviour {
                 ChangeTurn();
             }
         }
+    }
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_RevealPiece(int x, int y) {
+        if (Generator.gen == null) return;
+        Generator.gen.RevealPiece(x, y);
     }
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
     private void RPC_ShowVictory() {

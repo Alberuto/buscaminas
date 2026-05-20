@@ -57,7 +57,7 @@ public class Generator : MonoBehaviour {
             }
         }
     }
-    public void RevealPiece(int x, int y, bool isLocalPlayer) {
+    public void RevealPiece(int x, int y) {
 
         if (x < 0 || x >= width || y < 0 || y >= height) return;
 
